@@ -15,16 +15,14 @@ const BookList: React.FC = () => {
     if (!query.trim()) {
       return;
     }
-
+    console.log(query);
     setLoading(true);
     setError(null);
-    console.log("Button CLicked");
     try {
       const response = await axios.get(`http://localhost:5000/api/books`, {
-        params: {
-          q: query,
-        }
+        params: { q: query }
       });
+      console.log("Data " + response.data);
       if (response.data && response.data.docs) {
         setBooks(response.data.docs);
         // setTotalPages(Math.ceil(response.data.numFound / limit));
@@ -40,7 +38,6 @@ const BookList: React.FC = () => {
       setLoading(false);
     }
   };
-
   // Handle search and reset page to 1
   const handleSearch = () => {
     setCurrentPage(1);
@@ -109,11 +106,11 @@ const BookList: React.FC = () => {
       )}
 
       {/* No Results */}
-      {/* {!loading && books.length === 0 && !error && query.trim() && (
+      {!loading && books.length === 0 && !error && query.trim() && (
         <p className="text-gray-600 mt-2 text-center">
           No results found for "<span className="font-semibold">{query}</span>".
         </p>
-      )} */}
+      )}
 
       {/* Pagination Controls */}
       {!loading && books.length > 0 && (

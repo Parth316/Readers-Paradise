@@ -8,14 +8,17 @@ import Services from "../components/Services";
 import Login from "../components/Login";
 import SignUp from '../components/SignUp';
 import Explore from '../components/Explore';
+import Index from '../admin/components/Index';
 
 function App() {
   return (
     <>
+    
     <Router>
     <NavBar/>
       <Routes>
-        <Route path="/" element={<Navigate to="/home"/>}/>
+        <Route path="/" element={<Navigate to="/admin"/>}/>
+        <Route path='/admin' element={<Index/>}/>
         <Route path="/home"  element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />}/> 
