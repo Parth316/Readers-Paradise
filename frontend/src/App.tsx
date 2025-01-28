@@ -9,7 +9,7 @@ import Login from "../components/Login";
 import SignUp from '../components/SignUp';
 import Explore from '../components/Explore';
 import Index from '../admin/components/Index';
-
+import AddBook from '../admin/components/AddBook';
 function App() {
   return (
     <>
@@ -25,7 +25,7 @@ function App() {
         <Route path="/login" element={<Login/>}/> 
         <Route path="/signup" element={<SignUp/>}/>
         <Route path="/explore" element={<Explore />} />
-        
+        <Route path="/addBooks" element={<AddBook/>}/>
         </Routes>
     </Router>
   </>

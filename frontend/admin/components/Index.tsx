@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Book {
   title: string;
@@ -9,7 +10,7 @@ interface Book {
 }
 
 const AdminPanel: React.FC = () => {
-  const [show, setshow] = useState(false);
+  const navigate = useNavigate();
   const [book, setBook] = useState<Book>({
     title: "",
     author: "",
@@ -51,120 +52,36 @@ const AdminPanel: React.FC = () => {
 
   return (
     <>
-      <div className="grid grid-cols-3 grid-rows-4 bg-slate-400 m-3 space-x-2 w-2/4 pt-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pt-24 p-10">
         <button
           type="button"
-          className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 p-4"
+          className=" h-72 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          onClick={() => navigate("/addBooks")}
         >
           Add Books
         </button>
-        <button className="mt-6 bg-gray-600 hover:bg-yellow-600 text-white text-base md:text-lg py-2 md:py-3 px-6 md:px-10 lg:px-20 rounded-full shadow-md transition duration-300">
-          Explore
+        <button
+          type="button"
+          className="h-72 text-white bg-gradient-to-br from-green-600 to-teal-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          onClick={() => navigate("/update-books")}
+        >
+          Update Books
         </button>
-        <button className="mt-6 bg-gray-600 hover:bg-yellow-600 text-white text-base md:text-lg py-2 md:py-3 px-6 md:px-10 lg:px-20 rounded-full shadow-md transition duration-300">
-          Explore
+        <button
+          type="button"
+          className="h-72 text-white bg-gradient-to-br from-red-600 to-pink-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          onClick={() => navigate("/remove-books")}
+        >
+          Remove Books
         </button>
-        <button className="mt-6 bg-gray-600 hover:bg-yellow-600 text-white text-base md:text-lg py-2 md:py-3 px-6 md:px-10 lg:px-20 rounded-full shadow-md transition duration-300">
-          Explore
+        <button
+          type="button"
+          className="h-72 text-white bg-gradient-to-br from-yellow-600 to-orange-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          onClick={() => navigate("/list-books")}
+        >
+          List Books
         </button>
       </div>
-      {show && (
-        <div className="pt-20 max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
-            Add a New Book
-          </h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Title:
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={book.title}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="author"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Author:
-              </label>
-              <input
-                type="text"
-                id="author"
-                name="author"
-                value={book.author}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="isbn"
-                className="block text-sm font-medium text-gray-700"
-              >
-                ISBN:
-              </label>
-              <input
-                type="text"
-                id="isbn"
-                name="isbn"
-                value={book.isbn}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Description:
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={book.description}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Upload Image:
-              </label>
-              <input
-                type="file"
-                id="image"
-                name="image"
-                onChange={handleFileChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Add Book
-            </button>
-          </form>
-        </div>
-      )}
     </>
   );
 };

@@ -1,26 +1,21 @@
-// models/book.ts
-import mongoose, { Document, Schema } from 'mongoose';
+//backend/models/Book.ts
+import mongoose, { Schema, Document } from 'mongoose';
 
-// Define the interface for the book document
 interface IBook extends Document {
   title: string;
-  author_name: string[];
-  first_publish_year: number;
-  cover_i: number;
+  author: string;
+  isbn: string;
+  description: string;
+  image: string;
 }
 
-// Create the schema
-const bookSchema: Schema = new Schema(
-  {
-    title: { type: String, required: true },
-    author_name: { type: [String], required: true },
-    first_publish_year: { type: Number, required: true },
-    cover_i: { type: Number, required: true },
-  },
-  { timestamps: true }
-);
+const bookSchema: Schema = new Schema({
+  title: { type: String, required: true },
+  author: { type: String, required: true },
+  isbn: { type: String, required: true },
+  description: { type: String, required: true },
+});
 
-// Create the model from the schema
 const Book = mongoose.model<IBook>('Book', bookSchema);
 
 export default Book;

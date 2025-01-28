@@ -1,3 +1,4 @@
+//backend/controllers/authController.ts
 import { Request, Response } from "express";
 import User from "../models/User";
 
