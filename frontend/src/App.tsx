@@ -10,6 +10,7 @@ import SignUp from '../components/SignUp';
 import Explore from '../components/Explore';
 import Index from '../admin/components/Index';
 import AddBook from '../admin/components/AddBook';
+import ListBooks from '../admin/components/ListBooks';
 function App() {
   return (
     <>
@@ -26,6 +27,7 @@ function App() {
         <Route path="/signup" element={<SignUp/>}/>
         <Route path="/explore" element={<Explore />} />
         <Route path="/addBooks" element={<AddBook/>}/>
+        <Route path="/listBooks" element={<ListBooks/>}/>
         </Routes>
     </Router>
   </>

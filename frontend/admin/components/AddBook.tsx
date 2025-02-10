@@ -7,7 +7,7 @@ const AddBook: React.FC = () => {
     author: '',
     isbn: '',
     description: '',
-
+    qty: '',
   });
   const [message, setMessage] = useState('');
 
@@ -21,6 +21,7 @@ const AddBook: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(book);
     try {
       const response = await axios.post('http://localhost:5000/api/admin/addBooks', book);
       setMessage('Book added successfully!');
@@ -29,7 +30,7 @@ const AddBook: React.FC = () => {
         author: '',
         isbn: '',
         description: '',
-   
+        qty: '',
       });
       console.log(response.data);
     } catch (error) {
@@ -92,6 +93,19 @@ const AddBook: React.FC = () => {
             id="description"
             name="description"
             value={book.description}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Enter book description"
+          ></textarea>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+            Qty
+          </label>
+          <textarea
+            id="qty"
+            name="qty"
+            value={book.qty}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             placeholder="Enter book description"

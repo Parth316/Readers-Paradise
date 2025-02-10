@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from '../routes/auth';
-import bookRoutes from '../routes/book';
-import connectDB from '../config/db';
-import adminRoutes from '../routes/admin';
+import authRoutes from '../src/routes/auth';
+import bookRoutes from '../src/routes/book';
+import connectDB from './config/db';
+import adminRoutes from '../src/routes/admin';
 const app = express();
 const PORT = 5000;
 

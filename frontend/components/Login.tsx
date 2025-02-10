@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -11,6 +11,7 @@ const Login: React.FC = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const error = useSelector((state: RootState) => state.auth.error);
+
 
     const validateEmail = (email: string): boolean => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

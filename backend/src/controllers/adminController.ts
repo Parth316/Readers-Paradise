@@ -4,7 +4,8 @@ import axios from "axios";
 
 export const addBooks = async function(req: Request, res: Response):Promise<any> {
     try {
-        const { title, author, isbn, description } = req.body;
+        const { title, author, isbn, description, qty} = req.body;
+        console.log(req.body);
 
         // Validate request body
         if (!title || !author || !isbn || !description) {
@@ -16,16 +17,31 @@ export const addBooks = async function(req: Request, res: Response):Promise<any>
             author,
             isbn,
             description,
+            qty,
             
         });
 
         // Save the book to the database
         const savedBook = await newBook.save();
 
-        // Send a success response
+        // Send a success responses
         res.status(201).json(savedBook);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Server error " });
     }
 };
+
+export const listBooks=async function(req:Request,res:Response):Promise<any>{
+    try{
+        const books=await Book.find({});
+        res.status(200).json(books);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({message:"Server error"});
+    }
+}
+
+export const deleteBook = async (req: Request, res: Response): Promise<any>=> {
+        console.log("delete Book ", req.body);
+}
