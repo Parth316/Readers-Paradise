@@ -6,7 +6,7 @@ const Navbar: React.FC = () => {
   const [show, setshow] = useState(false);
   // const handleClick = () => {
   //   setshow(true);
-   
+
   // };
   return (
     <nav className="bg-gray-800 p-2 fixed w-full z-10">
@@ -57,20 +57,19 @@ const Navbar: React.FC = () => {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-            <Link to="/">
-              <img
-                className="h-10 w-auto"
-                src="../images/logo.png"
-                alt="Your Company"
+              <Link to="/">
+                <img
+                  className="h-10 w-auto"
+                  src="../images/logo.png"
+                  alt="Your Company"
                 />
-                </Link>
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex px-10 space-x-14 items-center">
                 <Link
                   to="/home"
                   className="rounded-md px-3 text-sm font-medium text-gray-300  hover:text-white"
-
                 >
                   Home
                 </Link>
@@ -86,16 +85,27 @@ const Navbar: React.FC = () => {
                 >
                   Services
                 </Link>
-                <Link
-                  to="/login"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
-                >
-                  Login
-                </Link>
-          <BookList/>
+
+                <BookList />
               </div>
             </div>
           </div>
+          <div className="hidden sm:ml-6 sm:block">
+              <div className="flex px-10 space-x-14 items-center"></div>
+          <Link
+            to="/login"
+            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+          >
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+          >
+            Sign Up
+          </Link>
+          </div>
+        
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <button
               type="button"
@@ -121,7 +131,7 @@ const Navbar: React.FC = () => {
             </button>
 
             <div className="relative ml-3">
-              <div>
+              {/* <div>
                 <button
                   type="button"
                   className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -139,7 +149,7 @@ const Navbar: React.FC = () => {
                     alt=""
                   />
                 </button>
-              </div>
+              </div> */}
               {show && (
                 <div
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none"
@@ -148,12 +158,7 @@ const Navbar: React.FC = () => {
                   aria-labelledby="user-menu-button"
                   tabIndex={-1}
                 >
-                  <Link
-                    to="/home"
-                   
-                  >
-                    Home
-                  </Link>
+                  <Link to="/home">Home</Link>
                   <Link
                     to="/about"
                     className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
@@ -172,9 +177,14 @@ const Navbar: React.FC = () => {
                   >
                     Login
                   </Link>
-                  <SearchBar/>
+                  <Link
+            to="/signup"
+            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+          >
+            Sign Up
+          </Link>
+                  <SearchBar />
                 </div>
-
               )}
             </div>
           </div>
@@ -208,8 +218,13 @@ const Navbar: React.FC = () => {
           >
             Login
           </Link>
-          <SearchBar/>
-
+          <Link
+            to="/signup"
+            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+          >
+            Signup
+          </Link>
+          <SearchBar />
         </div>
       </div>
     </nav>

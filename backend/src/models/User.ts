@@ -2,6 +2,7 @@ import mongoose, { CallbackError, Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
+    name:string;
     email: string;
     password: string;
     createdAt: Date;
@@ -10,6 +11,7 @@ export interface IUser extends Document {
 }
 
 const userSchema: Schema = new Schema({
+    name:{type:String, required:true},
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },

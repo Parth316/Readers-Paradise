@@ -3,8 +3,7 @@ import { Request, Response } from "express";
 import User from "../models/User";
 
 export const register = async (req: Request, res: Response): Promise<any> => {
-    const { email, password } = req.body;
-    console.log("Email & password : ", email, password);
+    const { name, email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ message: "Email and password are required" });
@@ -18,10 +17,9 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         }
 
         // Create a new user (schema's pre-save middleware will hash the password)
-        const newUser = new User({ email, password });
+        const newUser = new User({ name, email, password });
         await newUser.save();
 
-        console.log("New user registered:", newUser);
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
         console.error("Error in user registration:", error);

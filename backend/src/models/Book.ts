@@ -6,7 +6,7 @@ interface IBook extends Document {
   author: string;
   isbn: string;
   description: string;
-  image: string;
+  images: string[];
   qty: string;
   price: number;
   availabilty:boolean;
@@ -25,6 +25,12 @@ const bookSchema: Schema = new Schema({
   isbn: { type: String, required: true },
   description: { type: String, required: true },
   qty: { type: String, required: true },
+  images:{type:[String],required:true},
+  price: { type: Number, required: true },
+  genre: { type: String, required: true },
+  pages: { type: Number, required: true },
+  publisher: { type: String, required: true },
+  published_date: { type: Date, required: true },
 });
 
 const Book = mongoose.model<IBook>('Book', bookSchema);

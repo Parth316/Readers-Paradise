@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -88,7 +88,7 @@ const Login: React.FC = () => {
                         />
                     </div>
                     <div className="flex justify-between items-center mb-6">
-                        <Link to="/forgot-password" className="text-sm text-[#3f3d3c] underline">Forgot Password?</Link>
+                        <Link to="/forgotPassword" className="text-sm text-[#3f3d3c] underline">Forgot Password?</Link>
                     </div>
                     <button
                         type="submit"

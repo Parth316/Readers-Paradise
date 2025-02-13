@@ -52,8 +52,6 @@ export const addBook = createAsyncThunk(
   }
 );
 
-
-
 const bookSlice = createSlice({
   name: 'book',
   initialState,

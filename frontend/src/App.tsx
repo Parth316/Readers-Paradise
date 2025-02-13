@@ -11,6 +11,9 @@ import Explore from '../components/Explore';
 import Index from '../admin/components/Index';
 import AddBook from '../admin/components/AddBook';
 import ListBooks from '../admin/components/ListBooks';
+import ForgotPassword from '../components/ForgotPassword';
+import EmptyCart from '../components/EmptyCart';
+// App Component which contains navigation bar and routes
 function App() {
   return (
     <>
@@ -28,6 +31,8 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/addBooks" element={<AddBook/>}/>
         <Route path="/listBooks" element={<ListBooks/>}/>
+        <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+        <Route path="/cart/empty" element={<EmptyCart />} />
         </Routes>
     </Router>
   </>

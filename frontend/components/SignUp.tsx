@@ -7,6 +7,7 @@ import axios from "axios";
 
 const SignUp: React.FC = () => {
     const [formData, setFormData] = useState({
+        name:"",
         email: "",
         password: "",
         confirmPassword: ""
@@ -76,6 +77,7 @@ const SignUp: React.FC = () => {
             const response = await axios.post(
                 "http://localhost:5000/api/auth/signup",
                 {
+                    name: formData.name,
                     email: formData.email,
                     password: formData.password
                 }
@@ -97,7 +99,7 @@ const SignUp: React.FC = () => {
     return (
         <div className="min-h-screen sm:pt-28 flex flex-col md:flex-row items-center justify-center bg-amber-50">
             {/* Left Section */}
-            <div className="max-h-full sm:pt-28 py-20 w-full md:w-1/2 bg-gradient-to-r from-[#D89B30] to-[#FFD58D] rounded-r-full flex items-center justify-center">
+            <div className="max-h-full sm:pt-28 py-18 w-full md:w-1/2 bg-gradient-to-r from-[#D89B30] to-[#FFD58D] rounded-r-full flex items-center justify-center">
                 <img
                     src="../images/womanvector.png"
                     alt="Illustration"
@@ -118,6 +120,19 @@ const SignUp: React.FC = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                        <input
+                            type="name"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            autoComplete="name"
+                            className="w-full px-3 py-2 md:py-3 lg:py-4 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f] placeholder-gray-400"
+                            placeholder="Enter your name"
+                            required
+                        />
+                    </div>
                     <div>
                         <input
                             type="email"
