@@ -17,7 +17,6 @@ import EmptyCart from '../components/EmptyCart';
 function App() {
   return (
     <>
-    
     <Router>
     <NavBar/>
       <Routes>

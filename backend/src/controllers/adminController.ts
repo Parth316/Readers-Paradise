@@ -89,5 +89,42 @@ export const listBooks = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const deleteBook = async (req: Request, res: Response): Promise<any> => {
-  console.log("delete Book ", req.body);
+  try {
+    const { id } = req.params;
+
+    // Find the book by ID and delete it
+    const deletedBook = await Book.findByIdAndDelete(id);
+
+    if (!deletedBook) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    res.status(200).json({ message: 'Book deleted successfully', deletedBook });
+  } catch (error) {
+    console.error('Error deleting book:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }};
+
+export const updateBook = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    // Validate the data (optional)
+    if (!updatedData.title || !updatedData.author || !updatedData.price) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Find the book and update it
+    const updatedBook = await Book.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!updatedBook) {
+      return res.status(404).json({ message: 'Book not found' });
+    }
+
+    res.status(200).json(updatedBook);
+  } catch (error) {
+    console.error('Error updating book:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
