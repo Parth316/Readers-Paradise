@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Book from "../models/Book";
 import path from "path";
 import multer from "multer";
-
+import User from "../models/User";
 // Set up storage engine
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -63,10 +63,17 @@ export const addBooks = async (req: Request, res: Response): Promise<any> => {
         published_date,
         price,
         genre,
-
+        status:"New",
+        date: Date.now()
       });
-
+     
+      
       // Save the book to the database
+      const book = await Book.findOne({ isbn });
+      if(book!==null){
+        return res.status(400).json({ message: "Book already exists" });
+      }
+      
       const savedBook = await newBook.save();
 
       // Send a success response
@@ -128,3 +135,16 @@ export const updateBook = async (req: Request, res: Response): Promise<any> => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const listUsers = async (req: Request, res: Response): Promise<any> => {
+  try {
+    // Fetch all users
+    const users = await User.find({});
+    console.log(users);
+    // Send a success response
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}

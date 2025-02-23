@@ -69,17 +69,17 @@ const AdminPanel: React.FC = () => {
         </button> */}
         <button
           type="button"
-          className="h-72 text-white bg-gradient-to-br from-red-600 to-pink-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-          onClick={() => navigate("/remove-books")}
-        >
-          Remove Books
-        </button>
-        <button
-          type="button"
           className="h-72 text-white bg-gradient-to-br from-yellow-600 to-orange-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
           onClick={() => navigate("/listBooks")}
         >
           List Books
+        </button>
+        <button
+          type="button"
+          className="h-72 text-white bg-gradient-to-br from-red-600 to-pink-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          onClick={() => navigate("/listUsers")}
+        >
+          List Users
         </button>
       </div>
     </>

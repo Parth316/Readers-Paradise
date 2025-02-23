@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-
+import {ToastContainer,toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { CheckCircle } from 'lucide-react';
 const AddBook: React.FC = () => {
   const [message, setMessage] = useState('');
 
   // Genre options for the dropdown
   const genreOptions = [
+    'New Arrivals',
+    'Best Sellers ',
     'Fiction',
     'Non-Fiction',
     'Science Fiction',
@@ -20,48 +24,108 @@ const AddBook: React.FC = () => {
     'Self-Help',
     'Children',
     'Other',
+    'Arts & Crafts',
+    'Cooking',
+    'Education',
+    'Business & Finance',
+    'Health & Fitness',
+    'Sports & Recreation',
+    'Travel & Adventure',
+    'Religion & Spirituality',
+    'Science & Medicine',
+    'Technology',
+    'Gaming',
+    'Movies',
+    'Music',
+    'Newspapers',
+    'Magazines',
+    'Comics',
   ];
 
-  const handleSubmit = async (values: any, { setSubmitting }: any) => {
-    const formData = new FormData();
+  const showSuccessToast = (message) => {
+    toast.success(message, {
+      icon: <CheckCircle />,
+      position: "top-right",
+      autoClose: 5000, // 5 seconds
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+  
+// Function to show error toast
+const showErrorToast = (message) => {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 5000, // 5 seconds
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+  });
+};
+const resetFormData = (resetForm) => {
+  resetForm({
+    values: {
+      title: '',
+      author: '',
+      isbn: '',
+      description: '',
+      qty: '',
+      genre: '',
+      publisher: '',
+      publishedDate: '',
+      pages: '',
+      price: '',
+      images: [],
+    },
+  });
+};
+const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+  const formData = new FormData();
 
-    // Append text fields
-    formData.append('title', values.title);
-    formData.append('author', values.author);
-    formData.append('isbn', values.isbn);
-    formData.append('description', values.description);
-    formData.append('qty', values.qty);
-    formData.append('genre', values.genre);
-    formData.append('publisher', values.publisher);
-    formData.append('published_date', values.publishedDate); // Match backend field name
-    formData.append('pages', values.pages);
-    formData.append('price', values.price);
+  // Append text fields
+  formData.append('title', values.title);
+  formData.append('author', values.author);
+  formData.append('isbn', values.isbn);
+  formData.append('description', values.description);
+  formData.append('qty', values.qty);
+  formData.append('genre', values.genre);
+  formData.append('publisher', values.publisher);
+  formData.append('published_date', values.publishedDate); // Match backend field name
+  formData.append('pages', values.pages);
+  formData.append('price', values.price);
 
-    // Append images
-    values.images.forEach((image: File) => {
-      formData.append('images', image);
+  // Append images
+  values.images.forEach((image) => {
+    formData.append('images', image);
+  });
+
+  try {
+    const response = await axios.post('http://localhost:5000/api/admin/addBooks', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
-    try {
-      const response = await axios.post('http://localhost:5000/api/admin/addBooks', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.status === 201) {
-        setMessage('Book added successfully!');
-      } else {
-        setMessage('Failed to add book. Server responded with status ' + response.status);
-      }
-      setSubmitting(false);
-    } catch (error) {
-      setMessage('Failed to add book. ' + error.message);
-      setSubmitting(false);
-    }
-  };
-
+    if (response.status === 400) {
+      setMessage('Book alredy exists');
+    } 
+    showSuccessToast('Book added successfully');
+    resetFormData(resetForm); // Reset form data
+    setSubmitting(false);
+  } catch (error) {
+    showErrorToast('Failed to add book. ' + error.message);
+    setSubmitting(false);
+  }
+};
   return (
+
+    <>
+    <ToastContainer />
     <Formik
       initialValues={{
         title: '',
@@ -85,7 +149,7 @@ const AddBook: React.FC = () => {
           .min(3, 'Author must be at least 3 characters'),
         isbn: Yup.string()
           .required('ISBN is required')
-          .matches(/^[0-9\-]+$/, 'ISBN must contain only numbers and hyphens'),
+          .matches(/^[0-9-]+$/, 'ISBN must contain only numbers and hyphens'),
         description: Yup.string()
           .required('Description is required')
           .min(10, 'Description must be at least 10 characters'),
@@ -108,6 +172,7 @@ const AddBook: React.FC = () => {
         images: Yup.array()
           .min(1, 'At least one image is required')
           .required('Images are required'),
+        status: Yup.string(),
       })}
       onSubmit={handleSubmit}
     >
@@ -322,6 +387,8 @@ const AddBook: React.FC = () => {
         </div>
       )}
     </Formik>
+    </>
+
   );
 };
 

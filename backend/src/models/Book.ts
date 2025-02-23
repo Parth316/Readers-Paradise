@@ -16,7 +16,8 @@ interface IBook extends Document {
   published_date: Date;
   rating: number;
   reviews: number;
-  
+  status: string;
+  date: Date;
 }
 
 const bookSchema: Schema = new Schema({
@@ -31,6 +32,8 @@ const bookSchema: Schema = new Schema({
   pages: { type: Number, required: true },
   publisher: { type: String, required: true },
   published_date: { type: Date, required: true },
+  status: { type: String, required: true },
+  date: { type: Date, required: true },
 });
 
 const Book = mongoose.model<IBook>('Book', bookSchema);

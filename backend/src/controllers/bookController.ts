@@ -27,3 +27,20 @@ const fetchBooks = async (query: string) => {
         throw new Error('Error fetching books from Open Library API');
     }
 };
+
+export const getBookById =async (req: Request, res: Response):Promise<any> => {
+    const book = await Book.findById(req.params.id).exec();
+    
+    if (book === null) {
+      const err: Error = new Error("Book not found");
+      res.status(404);
+      return err;
+    }
+  
+    res.json({
+      status: 'success',
+      code: 200,
+      message: "Book details retrieved successfully",
+      data: book,
+    });
+};
