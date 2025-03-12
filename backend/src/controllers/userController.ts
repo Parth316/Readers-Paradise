@@ -9,3 +9,5 @@ export const newArrivals = async (req: Request, res: Response): Promise<any> => 
       res.status(500).json({ message: "Server error" });
     }
   };
+
+  

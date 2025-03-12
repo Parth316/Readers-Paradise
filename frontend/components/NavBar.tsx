@@ -1,13 +1,38 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
-import BookList from "./BookList";
-const Navbar: React.FC = () => {
-  const [show, setshow] = useState(false);
-  // const handleClick = () => {
-  //   setshow(true);
+import Search from "./Search";
 
-  // };
+interface CartItem {
+  _id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  image?: string; // Added for consistency
+}
+
+const Navbar: React.FC = () => {
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showCartDropdown, setShowCartDropdown] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  const fetchCartData = () => {
+    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(savedCart);
+  };
+
+  const getTotalQuantity = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  useEffect(() => {
+    fetchCartData();
+    window.addEventListener("storage", fetchCartData);
+    return () => {
+      window.removeEventListener("storage", fetchCartData);
+    };
+  }, []);
+
   return (
     <nav className="bg-gray-800 p-2 fixed w-full z-10">
       <div className="mx-auto max-w-8xl px-2 sm:px-6 lg:px-8">
@@ -17,13 +42,13 @@ const Navbar: React.FC = () => {
               type="button"
               className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-controls="mobile-menu"
-              aria-expanded="false"
+              aria-expanded={showMobileMenu}
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
             >
               <span className="absolute -inset-0.5"></span>
               <span className="sr-only">Open main menu</span>
-
               <svg
-                className="block size-6"
+                className={`${showMobileMenu ? "hidden" : "block"} size-6`}
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
@@ -37,9 +62,8 @@ const Navbar: React.FC = () => {
                   d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                 />
               </svg>
-
               <svg
-                className="hidden size-6"
+                className={`${showMobileMenu ? "block" : "hidden"} size-6`}
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
@@ -69,50 +93,110 @@ const Navbar: React.FC = () => {
               <div className="flex px-10 space-x-14 items-center">
                 <Link
                   to="/home"
-                  className="rounded-md px-3 text-sm font-medium text-gray-300  hover:text-white"
+                  className="rounded-md px-3 text-sm font-medium text-gray-300 hover:text-white"
                 >
                   Home
                 </Link>
                 <Link
                   to="/about"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
                 >
                   About
                 </Link>
                 <Link
                   to="/services"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
                 >
                   Services
                 </Link>
-
-                <BookList />
+                <Search />
               </div>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:block">
-              <div className="flex px-10 space-x-14 items-center"></div>
-          <Link
-            to="/login"
-            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
-          >
-            Sign Up
-          </Link>
+  
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+            <Link
+              to="/login"
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+            >
+              Sign Up
+            </Link>
+
+            <div className="relative group">
+              {/* Cart icon button - Navigate to /cart on click */}
+              <Link
+                to="/cart"
+                className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              >
+                <span className="sr-only">View cart</span>
+                <svg
+                  className="size-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  data-slot="icon"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                  />
+                </svg>
+                {getTotalQuantity() > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none  bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                    {getTotalQuantity()}
+                  </span>
+                )}
+              </Link>
+
+              {/* Dropdown - Show on hover */}
+              <div className="absolute right-0 z-20 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 hidden group-hover:block">
+                {cartItems.length === 0 ? (
+                  <div className="px-4 py-2 text-gray-500">
+                    Your cart is empty
+                  </div>
+                ) : (
+                  <>
+                    {cartItems.map((item) => (
+                      <div
+                        key={item._id}
+                        className="px-4 py-2 border-b border-gray-200 last:border-b-0"
+                      >
+                        <div className="flex justify-between">
+                          <span className="text-gray-700">{item.title}</span>
+                          <span className="text-gray-500">
+                            {item.quantity} x ${item.price.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="px-4 py-2">
+                      <Link
+                        to="/cart"
+                        className="block w-full text-center rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700"
+                      >
+                        View Cart
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <button
-              type="button"
+          <div className="relative ml-3 sm:hidden">
+            <Link
+              to="/cart"
               className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
             >
-              <span className="absolute -inset-1.5"></span>
-              <span className="sr-only">View notifications</span>
+              <span className="sr-only">View cart</span>
               <svg
                 className="size-6"
                 fill="none"
@@ -125,107 +209,93 @@ const Navbar: React.FC = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                 />
               </svg>
-            </button>
+              {getTotalQuantity() > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                  {getTotalQuantity()}
+                </span>
+              )}
+            </Link>
 
-            <div className="relative ml-3">
-              {/* <div>
-                <button
-                  type="button"
-                  className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  id="user-menu-button"
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                >
-                  <span className="absolute -inset-1.5"></span>
-                  <span className="sr-only">Open user menu</span>
-                
-                  <img
-                    className="size-8
-               rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                </button>
-              </div> */}
-              {show && (
-                <div
-                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="user-menu-button"
-                  tabIndex={-1}
-                >
-                  <Link to="/home">Home</Link>
-                  <Link
-                    to="/about"
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                  >
-                    About
-                  </Link>
-                  <Link
-                    to="/services"
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                  >
-                    Services
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                  >
-                    Login
-                  </Link>
-                  <Link
-            to="/signup"
-            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
-          >
-            Sign Up
-          </Link>
-                  <SearchBar />
+            {/* Dropdown - Show on hover */}
+            <div className="absolute right-0 z-20 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 hidden group-hover:block">
+              {cartItems.length === 0 ? (
+                <div className="px-4 py-2 text-gray-500">
+                  Your cart is empty
                 </div>
+              ) : (
+                <>
+                  {cartItems.map((item) => (
+                    <div
+                      key={item._id}
+                      className="px-4 py-2 border-b border-gray-200 last:border-b-0"
+                    >
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">{item.title}</span>
+                        <span className="text-gray-500">
+                          {item.quantity} x ${item.price.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="px-4 py-2">
+                    <Link
+                      to="/cart"
+                      className="block w-full text-center rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700"
+                    >
+                      View Cart
+                    </Link>
+                  </div>
+                </>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="sm:hidden" id="mobile-menu">
+      <div
+        className={`${showMobileMenu ? "block" : "hidden"} sm:hidden`}
+        id="mobile-menu"
+      >
         <div className="space-y-2 px-4 pb-1 pt-1">
           <Link
             to="/home"
-            className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+            className="block rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
             aria-current="page"
           >
             Home
           </Link>
           <Link
             to="/about"
-            className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
           >
             About
           </Link>
           <Link
             to="/services"
-            className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
           >
             Services
           </Link>
           <Link
             to="/login"
-            className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
           >
             Login
           </Link>
           <Link
             to="/signup"
-            className=" rounded-md px-3 py-2 text-sm font-medium text-gray-300  hover:text-white"
+            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
           >
-            Signup
+            Sign Up
           </Link>
-          <SearchBar />
+          <div className="px-3 py-2">
+            <SearchBar />
+          </div>
         </div>
+        
       </div>
     </nav>
   );

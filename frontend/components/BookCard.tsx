@@ -45,7 +45,6 @@ const BookCard: React.FC<BookCardProps> = ({
       className="p-4 transition-transform transform hover:scale-105 cursor-pointer"
       onClick={() => {
         dispatch(setSelectedBook(book));
-        navigate(`/details`);
       }}
     >
       <div className="bg-gray-50 rounded-3xl shadow-lg overflow-hidden flex flex-col hover:bg-slate-200">

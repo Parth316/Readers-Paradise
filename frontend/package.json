@@ -19,6 +19,7 @@
     "formik": "^2.4.6",
     "lucide-react": "^0.475.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.0",
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-error-boundary": "^5.0.0",

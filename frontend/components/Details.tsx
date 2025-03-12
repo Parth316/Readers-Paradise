@@ -7,13 +7,16 @@ import { RootState, AppDispatch } from "../redux/store";
 import { setSelectedBook } from "../redux/bookSlice";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const bookFromStore = useSelector((state: RootState) => state.book.selectedBook);
   const [book, setBook] = useState(bookFromStore);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const BACKEND_URL = "http://localhost:5000";
 
   useEffect(() => {
@@ -31,8 +34,12 @@ const Details: React.FC = () => {
       }
     };
 
-    fetchBookDetails();
-  }, [id, dispatch]);
+    if (!bookFromStore || bookFromStore.id !== id) {
+      fetchBookDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [id, dispatch, bookFromStore]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;

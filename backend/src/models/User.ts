@@ -8,6 +8,7 @@ export interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
+    resetCode?: string; // Add this line
 }
 
 const userSchema: Schema = new Schema({
@@ -16,6 +17,7 @@ const userSchema: Schema = new Schema({
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    resetCode: { type: String }, // Add this line
 });
 
 userSchema.pre<IUser>('save', async function (next) {

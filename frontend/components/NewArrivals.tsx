@@ -25,7 +25,9 @@ const NewArrivals: React.FC = () => {
   useEffect(() => {
     const fetchNewArrivals = async () => {
       try {
-        const response = await axios.get<Book[]>(`${BACKEND_URL}/api/books/newArrivals`);
+        const response = await axios.get<Book[]>(
+          `${BACKEND_URL}/api/books/newArrivals`
+        );
         setBooks(response.data);
         setLoading(false);
         setError(null);
@@ -56,7 +58,9 @@ const NewArrivals: React.FC = () => {
     <div className="flex justify-center items-center bg-amber-50">
       <div className="w-full px-20 py-5 bg-gray-700">
         <div className="max-w-[1200px] mx-auto">
-          <h1 className="text-3xl text-white ms-5 py-3 text-center">New Arrivals</h1>
+          <h1 className="text-3xl text-white ms-5 py-3 text-center">
+            New Arrivals
+          </h1>
         </div>
         {error ? (
           <div className="text-center text-red-500">{error}</div>
@@ -64,10 +68,16 @@ const NewArrivals: React.FC = () => {
           <Slider {...settings}>
             {loading
               ? Array.from({ length: 4 }).map((_, index) => (
-                  <BookCard key={index} loading={true} backendUrl={BACKEND_URL} book={{} as Book} />
+                  <BookCard
+                    key={index}
+                    loading={true}
+                    backendUrl={BACKEND_URL}
+                    book={{} as Book}
+                  />
                 ))
-                : books.map((book) => (
-                  <Link key={book._id} to={`/${book._id}`}>
+              : books.map((book) => (
+                  // Change this line in NewArrivals.tsx
+                  <Link key={book._id} to={`/books/${book._id}`}>
                     <BookCard book={book} backendUrl={BACKEND_URL} />
                   </Link>
                 ))}
