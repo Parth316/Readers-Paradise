@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import Search from "./Search";
@@ -13,7 +13,6 @@ interface CartItem {
 
 const Navbar: React.FC = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showCartDropdown, setShowCartDropdown] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const fetchCartData = () => {
@@ -21,9 +20,10 @@ const Navbar: React.FC = () => {
     setCartItems(savedCart);
   };
 
-  const getTotalQuantity = () => {
+  // Memoize the total quantity calculation
+  const totalQuantity = useMemo(() => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
+  }, [cartItems]); // Recompute only when cartItems changes
 
   useEffect(() => {
     fetchCartData();
@@ -113,7 +113,7 @@ const Navbar: React.FC = () => {
               </div>
             </div>
           </div>
-  
+
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
             <Link
               to="/login"
@@ -132,7 +132,7 @@ const Navbar: React.FC = () => {
               {/* Cart icon button - Navigate to /cart on click */}
               <Link
                 to="/cart"
-                className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
               >
                 <span className="sr-only">View cart</span>
                 <svg
@@ -150,9 +150,9 @@ const Navbar: React.FC = () => {
                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                   />
                 </svg>
-                {getTotalQuantity() > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none  bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                    {getTotalQuantity()}
+                {totalQuantity > 0 && (
+                  <span className="absolute mt-2 -top-0 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                    {totalQuantity}
                   </span>
                 )}
               </Link>
@@ -212,9 +212,9 @@ const Navbar: React.FC = () => {
                   d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
                 />
               </svg>
-              {getTotalQuantity() > 0 && (
+              {totalQuantity > 0 && (
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                  {getTotalQuantity()}
+                  {totalQuantity}
                 </span>
               )}
             </Link>
@@ -295,7 +295,6 @@ const Navbar: React.FC = () => {
             <SearchBar />
           </div>
         </div>
-        
       </div>
     </nav>
   );

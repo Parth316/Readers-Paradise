@@ -12,7 +12,7 @@ const useDebounce = (value: string, delay: number): string => {
 };
 
 interface SearchResult {
-  _id: string;
+  id: string;
   title: string;
   description: string;
   author: string;
@@ -26,6 +26,7 @@ const Search: React.FC = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false); // Track dropdown visibility
   const navigate = useNavigate();
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -46,8 +47,8 @@ const Search: React.FC = () => {
         params: { q: query },
         timeout: 5000,
       });
-
       setSearchResults(response.data || []);
+      setIsDropdownOpen(true); // Open dropdown when results are fetched
     } catch (err) {
       const errorMessage = axios.isAxiosError(err)
         ? `API Error: ${err.message}`
@@ -71,11 +72,13 @@ const Search: React.FC = () => {
     setSearchTerm('');
     setSearchResults([]);
     setError(null);
+    setIsDropdownOpen(false); // Close dropdown when search is cleared
   };
 
   const handleResultClick = (id: string) => {
-    navigate(`/book/${id}`);
-    clearSearch();
+    setIsDropdownOpen(false); // Close dropdown when a result is clicked
+    console.log(id);
+    navigate(`/books/${id}`);
   };
 
   return (
@@ -119,7 +122,7 @@ const Search: React.FC = () => {
       </div>
 
       {/* Search Results Dropdown */}
-      {searchTerm && (
+      {isDropdownOpen && searchTerm && (
         <div className="absolute w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           {isLoading && <div className="p-3 text-center text-gray-500">Loading...</div>}
           {error && <div className="p-3 text-center text-red-600">{error}</div>}
@@ -128,8 +131,8 @@ const Search: React.FC = () => {
             <div className="max-h-60 overflow-y-auto">
               {searchResults.map((result) => (
                 <div
-                  key={result._id}
-                  onClick={() => handleResultClick(result._id)}
+                  key={result.id}
+                  onClick={() => handleResultClick(result.id)}
                   className="p-3 border-b border-gray-100 cursor-pointer hover:bg-amber-100 transition"
                 >
                   <h3 className="text-lg font-semibold text-gray-900">{result.title}</h3>

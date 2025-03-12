@@ -84,7 +84,7 @@ const StarRating: React.FC<{ rating: number; onRatingChange: (rating: number) =>
     </div>
   );
 };
-
+  
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);

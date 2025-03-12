@@ -80,8 +80,8 @@ const Cart: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          Your Cart
+        <h2 className="text-4xl font-bold text-gray-600 mb-8 mt-8">
+          Cart
         </h2>
         {loading ? (
           <div className="grid grid-cols-1 gap-6 sm:gap-8">
@@ -116,7 +116,8 @@ const Cart: React.FC = () => {
                       <img
                         src={imageUrl}
                         alt={item.title}
-                        className="max-w-full max-h-48 object-contain rounded-md"
+                        className="m
+                        ax-w-full max-h-48 object-contain rounded-md"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "https://via.placeholder.com/150"; // Fallback image
@@ -151,10 +152,9 @@ const Cart: React.FC = () => {
                       </div>
                       <button
                         onClick={() => removeItem(item._id)}
-                        className="mt-4 w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200 sm:mt-6 flex items-center justify-center gap-2"
-                      >
+                        className="w-fit flex space-x-2 bg-gray-600 hover:bg-yellow-600 text-white text-base md:text-lg md:py-3 md:px-10 lg:px-20 rounded-full shadow-md transition duration-300"
+                        >
                         <TrashIcon className="text-lg" /> {/* Trash Icon */}
-                        <span>Remove</span>
                       </button>
                     </div>
                   </div>

@@ -47,7 +47,7 @@ export const searchBooks = async (req: Request, res: Response): Promise<void> =>
         author: book.author,
         publication_year: book.published_date,
       }));
-  
+      console.log("Formatted Books : "+formattedBooks);
       res.status(200).json(formattedBooks);
     } catch (error) {
       console.error('Error searching books:', error);
