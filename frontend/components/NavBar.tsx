@@ -2,6 +2,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import Search from "./Search";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { logout } from "../redux/authSlice";
 
 interface CartItem {
   _id: string;
@@ -12,6 +15,15 @@ interface CartItem {
 }
 
 const Navbar: React.FC = () => {
+  const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    // Optionally redirect to home or login page
+    window.location.href = "/"; // Simple redirect after logout
+  };
+
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
@@ -115,18 +127,34 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
-            <Link
-              to="/login"
-              className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-            >
-              Sign Up
-            </Link>
+            {isAuthenticated && user?.name ? (
+              <>
+                <span className="text-gray-300 font-semibold">
+                  Welcome, {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-[#c1a36f] hover:text-black transition duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
 
             <div className="relative group">
               {/* Cart icon button - Navigate to /cart on click */}
@@ -279,18 +307,34 @@ const Navbar: React.FC = () => {
           >
             Services
           </Link>
-          <Link
-            to="/login"
-            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-          >
-            Sign Up
-          </Link>
+          {isAuthenticated && user?.name ? (
+            <>
+              <span className="block px-3 py-2 text-sm font-medium text-gray-300">
+                Welcome, {user.name}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="block w-full rounded-md px-3 py-2 text-sm font-medium text-white bg-slate-600 hover:bg-[#c1a36f] hover:text-black"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
           <div className="px-3 py-2">
             <SearchBar />
           </div>

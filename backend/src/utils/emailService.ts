@@ -11,7 +11,7 @@ export const sendEmail = async ({ to, subject, text }: { to: string; subject: st
   const transporter = nodemailer.createTransport({
     service: "Gmail", // Use your email service (e.g., Gmail, Outlook, etc.)
     auth: {
-      user:"parthprajapati316@gmail.com", // Your email address
+      user:process.env.email||"parthprajapati316@gmail.com", // Your email address
       pass: "tfod ttsw seia sxoq", // Your email password or app-specific password
     },
   });

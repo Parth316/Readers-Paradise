@@ -63,17 +63,17 @@ const BookCard: React.FC<BookCardProps> = ({
           }}
         />
         <div className="p-2 flex flex-col justify-between">
-          <div>
+          <div className="ps-5 mb-3">
             <p className="text-lg font-semibold text-gray-800 mb-1">
               {book.title}
             </p>
-            <p className="text-xs text-gray-600">{book.author}</p>
-            <p className="text-xs text-gray-500">ISBN: {book.isbn}</p>
-            <p className="text-xs text-gray-500">Qty: {book.qty}</p>
+            <h2 className=" text-gray-600 font-semibold">{book.author}</h2>
+            <h4 className=" text-gray-500 text-sm">ISBN: {book.isbn}</h4>
+            {/* <p className="text-xs text-gray-500">Qty: {book.qty}</p> */}
           </div>
-          <div className="p-1 flex justify-center items-center">
+          <div className="px-5 pb-2 flex justify-center items-center">
             <button className="w-full text-xs md:text-xl bg-slate-600 text-white md:py-4 rounded-2xl border-2 border-gray-600 hover:bg-[#c1a36f] hover:text-black transition duration-300">
-              Add to cart
+              Explore
             </button>
           </div>
         </div>

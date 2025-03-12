@@ -167,8 +167,8 @@ const Cart: React.FC = () => {
               </p>
               <Link
                 to="/checkout"
-                className="w-full block text-center px-6 py-3 bg-amber-600 text-white rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors duration-200 sm:w-auto sm:inline-block"
-              >
+                className="w-fit flex space-x-2 bg-gray-600 hover:bg-yellow-600 text-white text-base md:text-lg md:py-3 md:px-10 lg:px-20 rounded-full shadow-md transition duration-300"
+                >
                 Proceed to Checkout
               </Link>
             </div>
