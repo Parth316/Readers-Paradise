@@ -9,6 +9,7 @@ export interface IUser extends Document {
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
     resetCode?: string; // Add this line
+    role: string; // Add this line
 }
 
 const userSchema: Schema = new Schema({
@@ -18,6 +19,7 @@ const userSchema: Schema = new Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     resetCode: { type: String }, // Add this line
+    role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Role field with default 'user'
 });
 
 userSchema.pre<IUser>('save', async function (next) {

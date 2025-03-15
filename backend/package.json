@@ -34,7 +34,9 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
+    "jsbarcode": "^3.11.6",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.0",
     "mongoose": "^8.9.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.0"

@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
 import BookCard from "./BookCard"; 
 import { Link } from "react-router-dom";
-import QuoteSlider from "./QuoteSlider";
+
 interface Book {
   _id: string;
   title: string;
@@ -60,14 +60,6 @@ const BookCarousel: React.FC<BookCarouselProps> = ({ category, bgColor = "bg-gra
   
   return (
     <div className="w-full bg-gray-800">
-    <div className="p-20 flex justify-start items-center ">
-      <img src="../images/couple.png" alt="couple.png" className="w-80" />
-      <QuoteSlider /> {/* Add the QuoteSlider component here */}
-      <div className="textContainer w-full">
-
-
-      </div>
-      </div>
     <div className={`flex justify-center items-center ${bgColor}`}>
       <div className="w-full px-20 py-5">
         <div className="max-w-[1200px] mx-auto">

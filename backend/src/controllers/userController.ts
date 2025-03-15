@@ -10,4 +10,13 @@ export const newArrivals = async (req: Request, res: Response): Promise<any> => 
     }
   };
 
-  
+  export const fetchBooksByCategory = async (req: Request, res: Response): Promise<any> => {
+    try {
+      const books = await Book.find({genre:"Best Sellers"});
+      console.log(books);
+      res.status(200).json(books);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  };

@@ -1,11 +1,15 @@
+// BookDetail.tsx
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Import react-toastify CSS
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { RootState } from "../redux/store";
+import { useSelector } from "react-redux";
+import Reviews from "./Reviews";
 
 interface Book {
   _id: string;
@@ -16,90 +20,108 @@ interface Book {
   isbn?: string;
   description?: string;
   image: string;
+  price: number;
   images: string[];
 }
 
 interface CartItem {
   _id: string;
   title: string;
-  price: number; // Assuming price will be added to the Book model later; for now, set a default
+  price: number;
   quantity: number;
   image: string;
 }
 
 interface Review {
   _id: string;
+  book: string;
   user: string;
   rating: number;
   comment: string;
   createdAt: string;
 }
 
-const BACKEND_URL = "http://localhost:5000";
-
-// Define the type for arrow props
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
 }
 
-// Custom Arrows
+const BACKEND_URL = "http://localhost:5000";
 function NextArrow({ className, style, onClick }: ArrowProps) {
   return (
     <div
-      className={className}
-      style={{ ...style, display: "block", background: "rgba(0,0,0,0.5)", borderRadius: "50%" }}
+      className={`${className} flex items-center justify-center w-10 h-10 right-[-20px] z-10`}
+      style={style}
       onClick={onClick}
-    />
+      aria-label="Next"
+    >
+      <div className="arrow-container bg-black/70 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 shadow-md hover:bg-black/90 hover:scale-105 active:scale-95">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-white"
+        >
+          <path
+            d="M9 18L15 12L9 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
   );
 }
 
 function PrevArrow({ className, style, onClick }: ArrowProps) {
   return (
     <div
-      className={className}
-      style={{ ...style, display: "block", background: "rgba(0,0,0,0.5)", borderRadius: "50%" }}
+      className={`${className} flex items-center justify-center w-10 h-10 left-[-20px] z-10`}
+      style={style}
       onClick={onClick}
-    />
+      aria-label="Previous"
+    >
+      <div className="arrow-container bg-black/70 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 shadow-md hover:bg-black/90 hover:scale-105 active:scale-95">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-white"
+        >
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
   );
 }
 
-// Star Rating Component
-const StarRating: React.FC<{ rating: number; onRatingChange: (rating: number) => void }> = ({
-  rating,
-  onRatingChange,
-}) => {
-  return (
-    <div className="flex space-x-1">
-      {[...Array(5)].map((_, index) => (
-        <button
-          key={index}
-          onClick={() => onRatingChange(index + 1)}
-          className={`text-2xl ${index < rating ? "text-amber-500" : "text-gray-300"} focus:outline-none`}
-        >
-          ★
-        </button>
-      ))}
-    </div>
-  );
-};
-  
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
   useEffect(() => {
     const fetchBook = async () => {
       try {
         const response = await axios.get<Book>(`${BACKEND_URL}/api/books/${id}`);
         setBook(response.data);
-        console.log("Fetched book data:", response.data);
       } catch (error) {
         console.error("Error fetching book:", error);
         setError("Failed to fetch book details");
@@ -110,27 +132,14 @@ const BookDetail: React.FC = () => {
     fetchBook();
   }, [id]);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await axios.get<Review[]>(`${BACKEND_URL}/api/books/${id}/reviews`);
-        setReviews(response.data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
-    fetchReviews();
-  }, [id]);
-
-  // Add book to cart with toast notification
   const addToCart = () => {
     if (!book) return;
     const cartItem: CartItem = {
       _id: book._id,
       title: book.title,
-      price: 10.99, // Replace with actual price
+      price: book.price,
       quantity: quantity,
-      image: book.images[0] || "", // Use the first image from book.images
+      image: book.images[0] || "",
     };
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
     const existingItemIndex = existingCart.findIndex((item: CartItem) => item._id === book._id);
@@ -150,21 +159,6 @@ const BookDetail: React.FC = () => {
     });
   };
 
-  // Handle review submission
-  const handleReviewSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${BACKEND_URL}/api/books/${id}/reviews`, newReview);
-      console.log(response.data);
-      setReviews([...reviews, response.data]);
-      setNewReview({ rating: 5, comment: "" });
-      toast.success("Review submitted successfully!");
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      toast.error("Failed to submit review");
-    }
-  };
-
   if (loading) return <div className="text-center py-8 animate-pulse">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!book) return <div className="text-center py-8">Book not found</div>;
@@ -176,8 +170,8 @@ const BookDetail: React.FC = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     adaptiveHeight: true,
-    arrows: true,
-    autoplay: true,
+    arrows: book.images.length > 1,
+    autoplay: book.images.length > 1,
     autoplaySpeed: 5000,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -196,21 +190,27 @@ const BookDetail: React.FC = () => {
                     const imageUrl = img.startsWith("http") ? img : `${BACKEND_URL}/${img}`;
                     return (
                       <div key={index} className="h-full flex items-center justify-center p-4">
-                        <img
-                          src={imageUrl}
-                          alt={`${book.title} ${index + 1}`}
-                          className="w-full h-full object-cover rounded-xl shadow-lg"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "https://via.placeholder.com/150"; // Fallback image
-                          }}
-                        />
+                        <div className="relative w-full h-full max-h-[500px]">
+                          <img
+                            src={imageUrl}
+                            alt={`${book.title} ${index + 1}`}
+                            className="w-2/3 h-auto object-contain rounded-xl shadow-lg"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "https://via.placeholder.com/150";
+                            }}
+                          />
+                        </div>
                       </div>
                     );
                   })}
                 </Slider>
               ) : (
-                <p className="text-center text-gray-500">No images available</p>
+                <img
+                  src="../images/notfound.png"
+                  alt="Book Cover"
+                  className="w-full h-auto object-contain rounded-xl shadow-lg"
+                />
               )}
             </div>
 
@@ -223,6 +223,9 @@ const BookDetail: React.FC = () => {
                   </h1>
                   <p className="text-xl text-amber-700 font-medium tracking-wide">
                     {book.author.toUpperCase()}
+                  </p>
+                  <p className="mt-3 text-2xl text-gray-700 font-bold p-2 bg-slate-200 w-fit rounded-md tracking-wide">
+                    {book.price}$
                   </p>
                 </div>
 
@@ -237,15 +240,15 @@ const BookDetail: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mb-8">
-                  <div className="text-center bg-amber-50 p-3 rounded-lg shadow-sm">
+                  <div className="text-center bg-white p-3 rounded-lg shadow-sm">
                     <p className="text-sm font-semibold text-amber-700 mb-1">Genre</p>
                     <p className="text-gray-700">{book.genre}</p>
                   </div>
-                  <div className="text-center bg-amber-50 p-3 rounded-lg shadow-sm">
+                  <div className="text-center bg-white p-3 rounded-lg shadow-sm">
                     <p className="text-sm font-semibold text-amber-700 mb-1">Published</p>
                     <p className="text-gray-700">{new Date(book.published_date).toLocaleDateString()}</p>
                   </div>
-                  <div className="text-center bg-amber-50 p-3 rounded-lg shadow-sm">
+                  <div className="text-center bg-white p-3 rounded-lg shadow-sm overflow-hidden">
                     <p className="text-sm font-semibold text-amber-700 mb-1">ISBN</p>
                     <p className="text-gray-700">{book.isbn || 'N/A'}</p>
                   </div>
@@ -262,7 +265,7 @@ const BookDetail: React.FC = () => {
               </div>
 
               <div>
-                <div className="bg-amber-50 p-6 rounded-xl mb-8">
+                <div className="bg-white p-6 rounded-xl mb-8">
                   <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">Key Features</h3>
                   <ul className="space-y-2">
                     <li className="flex items-center">
@@ -304,76 +307,17 @@ const BookDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Ratings and Reviews Section */}
-        <div className="mt-12">
-          <h2 className="text-3xl font-serif font-bold text-gray-900 mb-6">Ratings & Reviews</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Reviews List */}
-            <div>
-              {reviews.length > 0 ? (
-                reviews.map((review) => (
-                  <div key={review._id} className="bg-white p-6 rounded-lg shadow-md mb-4">
-                    <div className="flex items-center mb-2">
-                      <span className="text-amber-600 font-bold">{review.user}</span>
-                      <span className="text-gray-500 text-sm ml-2">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <span
-                          key={i}
-                          className={`text-xl ${i < review.rating ? "text-amber-500" : "text-gray-300"}`}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-gray-700">{review.comment}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No reviews yet. Be the first to review!</p>
-              )}
-            </div>
-
-            {/* Review Form */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-serif font-bold text-gray-900 mb-4">Write a Review</h3>
-              <form onSubmit={handleReviewSubmit}>
-                <div className="mb-4">
-                  <label htmlFor="rating" className="block text-gray-700 mb-2">Rating</label>
-                  <StarRating
-                    rating={newReview.rating}
-                    onRatingChange={(rating) => setNewReview({ ...newReview, rating })}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="comment" className="block text-gray-700 mb-2">Comment</label>
-                  <textarea
-                    id="comment"
-                    value={newReview.comment}
-                    onChange={(e) =>
-                      setNewReview({ ...newReview, comment: e.target.value })
-                    }
-                    className="w-full p-2 border border-gray-300 rounded"
-                    rows={4}
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-amber-600 text-white rounded-full hover:bg-amber-700"
-                >
-                  Submit Review
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+        {/* Reviews Component */}
+        <Reviews
+          id={id!}
+          reviews={reviews}
+          setReviews={setReviews}
+          isAuthenticated={isAuthenticated}
+          user={user}
+          token={localStorage.getItem("token")}
+        />
       </div>
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

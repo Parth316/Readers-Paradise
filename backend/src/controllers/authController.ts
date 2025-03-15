@@ -2,44 +2,52 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import { generateResetCode, sendEmail } from "../utils/emailService";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"; // Import jsonwebtoken
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
 
 // Ensure JWT_SECRET is defined
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret"; // Fallback for development
+const JWT_SECRET = process.env.JWT_SECRET || "da557ddb9b67da56f785b86fd52f65531f3e42333ff0c919573ecec091f03f7b5b7a2dfc344210639d1398ab899b01afedfa45031365f6b895972c087bd58a2ac397c915c415bd4920e5a7a68279e7cfee874a98e8fcf8ce04cb714f2a098268adbae37e48a7ca860cceb95864ab30bb7253ffa9bd160117c1df5d022c7d3492"; // Use a shorter fallback for clarity
 
-export const register = async (req: Request, res: Response): Promise<any> => {
+// Register a new user
+export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
+    res.status(400).json({ message: "Email and password are required" });
+    return;
   }
 
   try {
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User with this email already exists" });
+      res.status(400).json({ message: "User with this email already exists" });
+      return;
     }
 
-    // Create a new user (schema's pre-save middleware will hash the password)
-    const newUser = new User({ name, email, password });
+    // Create a new user (role defaults to 'user' in schema)
+    const newUser = new User({ name, email, password, role: "user" }); // Explicitly set role
     await newUser.save();
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser._id, email: newUser.email },
+      { id: newUser._id, email: newUser.email, role: newUser.role },
       JWT_SECRET,
-      { expiresIn: "1h" } // Token expires in 1 hour
+      { expiresIn: "1h" }
     );
-
+    console.log(token);
     res.status(201).json({
       message: "User registered successfully",
       token,
-      user: { id: newUser._id, email: newUser.email, name: newUser.name },
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role, // Include role in response
+      },
     });
   } catch (error) {
     console.error("Error in user registration:", error);
@@ -47,6 +55,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+// Login an existing user
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password }: { email: string; password: string } = req.body;
   console.log("Request has reached the backend:", req.body);
@@ -70,22 +79,27 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.log("Password match:", isMatch);
 
     if (!isMatch) {
-      console.error("Invalid credentials for email:", email);
-      res.status(401).json({ message: "Invalid credentials" });
+      console.error("Invalid password for email:", email);
+      res.status(401).json({ message: "Invalid password" });
       return;
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.json({
+    res.status(200).json({
       message: "User authenticated successfully",
       token,
-      user: { id: user._id, email: user.email, name: user.name },
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role, // Include role in response
+      },
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -93,60 +107,73 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const sendPasswordResetCode = async (req: Request, res: Response): Promise<any> => {
+// Send password reset code
+export const sendPasswordResetCode = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
+
+  if (!email) {
+    res.status(400).json({ message: "Email is required" });
+    return;
+  }
 
   try {
     // Check if the user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      res.status(404).json({ message: "User not found" });
+      return;
     }
 
-    // Generate a 4-digit reset code
+    // Generate and save reset code
     const resetCode = generateResetCode();
-
-    // Save the reset code to the user's document
     user.resetCode = resetCode;
     await user.save();
 
-    // Send the reset code via email
+    // Send reset code via email
     await sendEmail({
       to: email,
       subject: "Password Reset Code",
       text: `Your password reset code is: ${resetCode}`,
     });
 
-    res.status(200).json({ message: "A 4-digit code has been sent to your email." });
+    res.status(200).json({ message: "A 4-digit code has been sent to your email" });
   } catch (error) {
     console.error("Error sending reset code:", error);
-    res.status(500).json({ message: "An error occurred. Please try again." });
+    res.status(500).json({ message: "An error occurred. Please try again" });
   }
 };
 
-export const resetPassword = async (req: Request, res: Response): Promise<any> => {
+// Reset password
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
   const { email, resetCode, newPassword } = req.body;
+
+  if (!email || !resetCode || !newPassword) {
+    res.status(400).json({ message: "Email, reset code, and new password are required" });
+    return;
+  }
 
   try {
     // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      res.status(404).json({ message: "User not found" });
+      return;
     }
 
     // Verify the reset code
     if (user.resetCode !== resetCode) {
-      return res.status(400).json({ message: "Invalid reset code." });
+      res.status(400).json({ message: "Invalid reset code" });
+      return;
     }
 
-    // Update the password - let pre-save middleware handle hashing
+    // Update password and clear reset code
     user.password = newPassword;
     user.resetCode = undefined;
     await user.save();
 
-    res.status(200).json({ message: "Password reset successfully." });
+    res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     console.error("Error resetting password:", error);
-    res.status(500).json({ message: "An error occurred. Please try again." });
+    res.status(500).json({ message: "An error occurred. Please try again" });
   }
 };

@@ -9,7 +9,7 @@ import orderRoutes from "./routes/orders";
 
 const app = express();
 const PORT = 5000;
-
+export const JWT_SECRET = process.env.JWT_SECRET ;
 app.use(cors());
 app.use(express.json());
 

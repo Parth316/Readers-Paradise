@@ -148,3 +148,14 @@ export const listUsers = async (req: Request, res: Response): Promise<any> => {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+export const getBookByIsbn = async (req: Request, res: Response): Promise<any> => {
+  
+    try {
+      const book = await Book.findOne({ isbn: req.params.isbn });
+      if (!book) return res.status(404).json({ message: "Book not found" });
+      res.json(book);
+    } catch (err) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }

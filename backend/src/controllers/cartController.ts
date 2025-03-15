@@ -50,3 +50,22 @@ export const updateCart = async (req: AuthenticatedRequest, res: Response): Prom
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const saveCart = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  const { items } = req.body;
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+    }
+
+    const cart = new Cart({ userId, items });
+    await cart.save();
+
+    res.status(201).json({ message: "Cart saved successfully", cart });
+  } catch (error) {
+    console.error("Error saving cart:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

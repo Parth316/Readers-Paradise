@@ -139,11 +139,11 @@ const ListBooks: React.FC = () => {
       }`}
     >
       {book.images && book.images.length > 0 ? (
-        <>
+        <div className="w-full h-full flex align-center justify-center ">
           <img
             src={getImageUrl(book.images[currentImageIndexes[book._id]])}
             alt={`Cover of ${book.title} by ${book.author}`}
-            className="w-full h-full object-cover"
+            className="max-w-full max-h-80 object-contain rounded-md"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = notFoundImage;
@@ -180,13 +180,13 @@ const ListBooks: React.FC = () => {
               </div>
             </>
           )}
-        </>
+        </div>
       ) : (
         <div className="w-full h-full bg-gray-200 flex items-center justify-center">
           <img
             src={notFoundImage}
             alt="No image available"
-            className="max-w-full max-h-full"
+            className="max-w-full max-h-80"
           />
         </div>
       )}

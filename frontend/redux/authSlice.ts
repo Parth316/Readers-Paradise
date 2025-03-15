@@ -1,14 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios"; // Ensure axios is imported for header clearing
+import axios from "axios";
+
+interface User {
+  id?: string;
+  email?: string;
+  name?: string;
+  role: "user" | "admin";
+}
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: {
-    id?: string;
-    email?: string;
-    name?: string;
-  } | null; // Store user data
-  token: string | null; // Store JWT token
+  user: User | null;
+  token: string | null;
   error: string | null;
 }
 
@@ -23,7 +26,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loginSuccess: (state, action: PayloadAction<{ token: string; user: any }>) => {
+    loginSuccess: (state, action: PayloadAction<{ token: string; user: User }>) => {
       state.isAuthenticated = true;
       state.token = action.payload.token;
       state.user = action.payload.user;
@@ -36,7 +39,7 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      delete axios.defaults.headers.common["Authorization"]; // Clear axios header
+      delete axios.defaults.headers.common["Authorization"];
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.isAuthenticated = false;
@@ -47,9 +50,8 @@ const authSlice = createSlice({
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
-    signupSuccess: (state, action: PayloadAction<{ token: string; user: any }>) => {
-      // Clear any errors after successful signup and set token/user if returned by backend
-      state.isAuthenticated = true; // Auto-login after signup if token is provided
+    signupSuccess: (state, action: PayloadAction<{ token: string; user: User }>) => {
+      state.isAuthenticated = true; // Auto-login after signup
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.error = null;

@@ -1,5 +1,6 @@
 import React, { Suspense, useRef } from "react";
 import { motion } from "framer-motion";
+import BookQuotes from "./BookQuotes";
 const BookCarousel = React.lazy(() => import("./BookCarousel"));
 const NewArrivals = React.lazy(() => import("./NewArrivals"));
 
@@ -16,7 +17,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="sm:pt-28 lg:pt-20 min-h-screen flex items-center justify-center bg-amber-50">
+      <div className="sm:pt-28 lg:pt-20 min-h-screen flex w-full items-center justify-center bg-amber-50">
         <div className="pt-20 flex flex-col lg:flex-row items-center justify-around max-w-6xl w-full mx-auto p-6 lg:p-1 space-y-8 lg:space-y-10 lg:space-x-10">
           <motion.div
             className="w-full lg:w-1/2 text-center lg:text-left"
@@ -47,7 +48,7 @@ const Home: React.FC = () => {
             className="w-full lg:w-1/3 flex justify-center"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1.0 }}
           >
             <img
               src="../images/reader.png"
@@ -57,13 +58,14 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
       </div>
-
-      <Suspense fallback={<div className="text-center">Loading...</div>}>
-        <BookCarousel category="newArrivals" bgColor="bg-amber-50" />
+      <BookQuotes/>
+    <div ref={newArrivalsRef}></div>
+      <Suspense fallback={<div className="text-center" >Loading...</div>}>
+        <BookCarousel category="bestSellers" bgColor="bg-amber-50" />
       </Suspense>
-      <Suspense fallback={<div className="text-center">Loading...</div>}>
+      <Suspense fallback={<div className="text-center" >Loading...</div>}>
         {/* Add ref to the NewArrivals component */}
-        <div ref={newArrivalsRef}>
+        <div >
           <NewArrivals />
         </div>
       </Suspense>

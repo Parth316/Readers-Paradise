@@ -11,7 +11,7 @@ const AddBook: React.FC = () => {
   // Genre options for the dropdown
   const genreOptions = [
     'New Arrivals',
-    'Best Sellers ',
+    'Best Sellers',
     'Fiction',
     'Non-Fiction',
     'Science Fiction',

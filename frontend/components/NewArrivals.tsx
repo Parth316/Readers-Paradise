@@ -55,7 +55,7 @@ const NewArrivals: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center bg-amber-50">
+    <div className="flex flex-row justify-center items-center bg-amber-50">
       <div className="w-full px-20 py-5 bg-gray-700">
         <div className="max-w-[1200px] mx-auto">
           <h1 className="text-3xl text-white ms-5 py-3 text-center">

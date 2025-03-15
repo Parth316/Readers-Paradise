@@ -1,9 +1,10 @@
+// Checkout.tsx
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify"; // For notifications (optional)
+import { toast } from "react-toastify";
 
 interface CartItem {
   _id: string;
@@ -14,28 +15,34 @@ interface CartItem {
 }
 
 interface ShippingAddress {
+  recipientName: string; // New: Name of the recipient
   address: string;
   city: string;
   postalCode: string;
   country: string;
+  phoneNumber: string; // New: Contact number
+  email: string; // New: Contact email
+  deliveryInstructions?: string; // New: Optional instructions (e.g., "Leave at door")
 }
-
 const Checkout: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
+    recipientName: "",
     address: "",
     city: "",
     postalCode: "",
     country: "",
+    phoneNumber: "",
+    email: "",
+    deliveryInstructions: "",
   });
   const [paymentMethod, setPaymentMethod] = useState<string>("credit_card");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLoading, setShowLoading] = useState(false); // New state for GIF
 
-  // Fetch cart items from localStorage
   useEffect(() => {
     const fetchCartData = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -44,21 +51,20 @@ const Checkout: React.FC = () => {
     fetchCartData();
   }, []);
 
-  // Calculate total price
   const totalPrice = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setShippingAddress((prev) => ({
       ...prev,
@@ -66,7 +72,6 @@ const Checkout: React.FC = () => {
     }));
   };
 
-  // Handle order submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated || !user) {
@@ -74,18 +79,21 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    // Validate shipping address
     if (
+      !shippingAddress.recipientName ||
       !shippingAddress.address ||
       !shippingAddress.city ||
       !shippingAddress.postalCode ||
-      !shippingAddress.country
+      !shippingAddress.country ||
+      !shippingAddress.phoneNumber ||
+      !shippingAddress.email
     ) {
       toast.error("Please fill in all shipping address fields.");
       return;
     }
 
     setIsSubmitting(true);
+    setShowLoading(true); // Show the loading GIF
 
     try {
       const orderData = {
@@ -101,17 +109,33 @@ const Checkout: React.FC = () => {
         totalAmount: totalPrice,
       };
 
-      const response = await axios.post("http://localhost:5000/api/orders/create", orderData);
+      const response = await axios.post(
+        "http://localhost:5000/api/orders/create",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (response.status === 201) {
-        // Clear cart after successful order
         localStorage.removeItem("cart");
         toast.success("Order placed successfully!");
-        navigate("/order-confirmation", { state: { order: response.data.order } });
-      } else {
-        toast.error("Failed to place order.");
+
+        // Simulate a 2-3 second delay before navigating
+        setTimeout(() => {
+          setShowLoading(false); // Hide the GIF
+          navigate("/orderConfirmation", {
+            state: {
+              order: response.data.order,
+              lowStockBooks: response.data.lowStockBooks, // Include if using previous low stock feature
+            },
+          });
+        }, 3500); // 2.5 seconds delay
       }
     } catch (error: any) {
+      setShowLoading(false); // Hide GIF on error
       const errorMessage =
         error.response?.data?.message || "An error occurred while placing the order.";
       toast.error(errorMessage);
@@ -121,16 +145,26 @@ const Checkout: React.FC = () => {
   };
 
   if (!isAuthenticated) {
-    return null; // Redirect handled by useEffect
+    return null;
   }
-
   return (
-    <div className="bg-gray-100 min-h-screen py-16 w-full">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 ">
-        <h1 className="text-4xl md:text-5xl font-bold text-[#3f3d3c] my-8">
+    <div className="bg-gray-100 min-h-screen py-16 w-full relative">
+      {/* Loading GIF Overlay */}
+      {showLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <img
+            src="../images/book.gif"
+            alt="Loading..."
+            className="w-48 h-48 md:w-48 md:h-48"
+          />
+        </div>
+      )}
+  
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl md:text-5xl font-bold text-[#3f3d3c] my-8 text-center">
           Checkout
         </h1>
-
+  
         {cartItems.length === 0 ? (
           <div className="text-center">
             <p className="text-gray-700 text-lg mb-4">Your cart is empty.</p>
@@ -142,63 +176,94 @@ const Checkout: React.FC = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Cart Summary */}
-            <div className="lg:col-span-2">
-              <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 className="text-2xl font-semibold text-[#3f3d3c] mb-4">
-                  Order Summary
-                </h2>
-                {cartItems.map((item) => (
+          <div className="space-y-8">
+            {/* Order Summary Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-2xl font-semibold text-[#3f3d3c] mb-4">
+                Order Summary
+              </h2>
+              <hr />
+              {cartItems.map((item) => {
+                const backendUrl =
+                  import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+                const imageUrl =
+                  item.image && item.image.startsWith("http")
+                    ? item.image
+                    : `${backendUrl}/${item.image}`;
+  
+                return (
                   <div
                     key={item._id}
-                    className="flex items-center justify-between border-b border-gray-200 py-4"
+                    className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-200 py-4"
                   >
-                    <div className="flex items-center">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start w-full sm:w-auto">
                       {item.image && (
                         <img
-                          src={item.image}
+                          src={imageUrl || "../images/notfound.png"}
                           alt={item.title}
-                          className="w-16 h-16 object-cover rounded mr-4"
+                          className="w-32 h-48 object-contain rounded-md mb-4 sm:mb-0 sm:mr-4"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://via.placeholder.com/150";
+                          }}
                         />
                       )}
-                      <div>
-                        <h3 className="text-lg font-semibold text-[#3f3d3c]">
+                      <div className="flex flex-col text-center sm:text-left">
+                        <h3 className="text-xl sm:text-2xl font-semibold text-[#3f3d3c]">
                           {item.title}
                         </h3>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 text-lg sm:text-xl">
                           {item.quantity} x ${item.price.toFixed(2)}
                         </p>
                       </div>
                     </div>
-                    <p className="text-gray-700 font-semibold">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </p>
+                    <div className="mt-4 sm:mt-0">
+                      <p className="text-gray-700 font-semibold text-lg sm:text-xl">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                ))}
-                <div className="flex justify-between mt-4">
-                  <h3 className="text-lg font-semibold text-[#3f3d3c]">Total:</h3>
-                  <p className="text-lg font-semibold text-[#3f3d3c]">
-                    ${totalPrice.toFixed(2)}
-                  </p>
-                </div>
+                );
+              })}
+              <div className="flex justify-between mt-4">
+                <h3 className="text-lg font-semibold text-[#3f3d3c]">Total:</h3>
+                <p className="text-lg font-semibold text-[#3f3d3c]">
+                  ${totalPrice.toFixed(2)}
+                </p>
               </div>
             </div>
-
-            {/* Checkout Form */}
-            <div className="lg:col-span-1">
-              <div className="bg-white p-6 rounded-lg shadow-md ">
-                <h2 className="text-2xl font-semibold text-[#3f3d3c] mb-4">
-                  Shipping & Payment Details
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Shipping Address */}
+  
+            {/* Shipping & Payment Form Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-2xl font-semibold text-[#3f3d3c] mb-4">
+                Shipping & Payment Details
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="recipientName"
+                      className="block text-gray-700 font-medium mb-1"
+                    >
+                      Recipient Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="recipientName"
+                      name="recipientName"
+                      value={shippingAddress.recipientName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
                   <div>
                     <label
                       htmlFor="address"
                       className="block text-gray-700 font-medium mb-1"
                     >
-                      Address
+                      Address *
                     </label>
                     <input
                       type="text"
@@ -216,7 +281,7 @@ const Checkout: React.FC = () => {
                       htmlFor="city"
                       className="block text-gray-700 font-medium mb-1"
                     >
-                      City
+                      City *
                     </label>
                     <input
                       type="text"
@@ -234,7 +299,7 @@ const Checkout: React.FC = () => {
                       htmlFor="postalCode"
                       className="block text-gray-700 font-medium mb-1"
                     >
-                      Postal Code
+                      Postal Code *
                     </label>
                     <input
                       type="text"
@@ -252,7 +317,7 @@ const Checkout: React.FC = () => {
                       htmlFor="country"
                       className="block text-gray-700 font-medium mb-1"
                     >
-                      Country
+                      Country *
                     </label>
                     <input
                       type="text"
@@ -265,8 +330,59 @@ const Checkout: React.FC = () => {
                       required
                     />
                   </div>
-
-                  {/* Payment Method */}
+                  <div>
+                    <label
+                      htmlFor="phoneNumber"
+                      className="block text-gray-700 font-medium mb-1"
+                    >
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      value={shippingAddress.phoneNumber}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
+                      placeholder="+1 123-456-7890"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-gray-700 font-medium mb-1"
+                    >
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={shippingAddress.email}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
+                      placeholder="john.doe@example.com"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="deliveryInstructions"
+                      className="block text-gray-700 font-medium mb-1"
+                    >
+                      Delivery Instructions (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="deliveryInstructions"
+                      name="deliveryInstructions"
+                      value={shippingAddress.deliveryInstructions}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
+                      placeholder="Leave at front door"
+                    />
+                  </div>
                   <div>
                     <label
                       htmlFor="paymentMethod"
@@ -286,21 +402,20 @@ const Checkout: React.FC = () => {
                       <option value="cash_on_delivery">Cash on Delivery</option>
                     </select>
                   </div>
-
-                  {/* Place Order Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full text-lg bg-slate-600 text-white py-3 rounded-full border-2 border-gray-600 transition duration-300 ${
-                      isSubmitting
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-[#c1a36f] hover:text-black"
-                    }`}
-                  >
-                    {isSubmitting ? "Placing Order..." : "Place Order"}
-                  </button>
-                </form>
-              </div>
+                </div>
+  
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full text-lg bg-slate-600 text-white py-3 rounded-full border-2 border-gray-600 transition duration-300 ${
+                    isSubmitting
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-[#c1a36f] hover:text-black"
+                  }`}
+                >
+                  {isSubmitting ? "Placing Order..." : "Place Order"}
+                </button>
+              </form>
             </div>
           </div>
         )}

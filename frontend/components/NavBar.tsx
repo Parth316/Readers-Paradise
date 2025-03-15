@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import SearchBar from "./SearchBar";
 import Search from "./Search";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -16,7 +15,9 @@ interface CartItem {
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const handleLogout = () => {
     dispatch(logout());
@@ -91,37 +92,75 @@ const Navbar: React.FC = () => {
               </svg>
             </button>
           </div>
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+          <div className="flex flex-1 w-auto items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
               <Link to="/">
                 <img
                   className="h-10 w-auto"
                   src="../images/logo.png"
-                  alt="Your Company"
+                  alt="Reader's Paradise"
                 />
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
-              <div className="flex px-10 space-x-14 items-center">
-                <Link
-                  to="/home"
-                  className="rounded-md px-3 text-sm font-medium text-gray-300 hover:text-white"
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/about"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-                >
-                  About
-                </Link>
-                <Link
-                  to="/services"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-                >
-                  Services
-                </Link>
-                <Search />
+              <div className="flex px-16 space-x-14 items-center">
+                {isAuthenticated && user?.role === "admin" && user.name ? (
+                  <>
+                    <Link
+                      to="/adminPanel"
+                      className="rounded-md px-3 py-2  text-sm font-medium text-gray-300 hover:text-white"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/listBooks"
+                      className="rounded-md px-3 text-sm font-medium text-gray-300 hover:text-white"
+                    >
+                      Books
+                    </Link>
+                    <Link
+                      to="/listUsers"
+                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+                    >
+                      Users
+                    </Link>
+                    <Link
+                      to="/listOrders"
+                      className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+                    >
+                      Orders
+                    </Link>
+                    <Link
+                      to="/packedOrders"
+                      className="rounded-md px-3 py-2  text-sm font-medium text-gray-300 hover:text-white"
+                    >
+                      Packed
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/home"
+                      className="block rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                      aria-current="page"
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      to="/about"
+                      className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      About
+                    </Link>
+                    <Link
+                      to="/services"
+                      className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                    >
+                      Services
+                    </Link>
+                    <Search />
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -201,7 +240,7 @@ const Navbar: React.FC = () => {
                         <div className="flex justify-between">
                           <span className="text-gray-700">{item.title}</span>
                           <span className="text-gray-500">
-                            {item.quantity} x ${item.price.toFixed(2)}
+                            {item.quantity} x ${item.price}
                           </span>
                         </div>
                       </div>
@@ -263,7 +302,7 @@ const Navbar: React.FC = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-700">{item.title}</span>
                         <span className="text-gray-500">
-                          {item.quantity} x ${item.price.toFixed(2)}
+                          {item.quantity} x ${item.price}
                         </span>
                       </div>
                     </div>
@@ -307,6 +346,16 @@ const Navbar: React.FC = () => {
           >
             Services
           </Link>
+          {isAuthenticated && user?.role === "admin" && user.name ? (
+            <Link
+              to="/adminPanel"
+              className="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            false
+          )}
           {isAuthenticated && user?.name ? (
             <>
               <span className="block px-3 py-2 text-sm font-medium text-gray-300">
@@ -336,7 +385,6 @@ const Navbar: React.FC = () => {
             </>
           )}
           <div className="px-3 py-2">
-            <SearchBar />
           </div>
         </div>
       </div>
