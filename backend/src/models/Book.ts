@@ -32,8 +32,8 @@ const bookSchema: Schema = new Schema({
   pages: { type: Number, required: true },
   publisher: { type: String, required: true },
   published_date: { type: Date, required: true },
-  status: { type: String, required: true },
-  date: { type: Date, required: true },
+  status: { type: String },
+  date: { type: Date, default: Date.now },
 });
 
 const Book = mongoose.model<IBook>('Book', bookSchema);

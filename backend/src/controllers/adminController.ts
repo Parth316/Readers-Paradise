@@ -159,3 +159,31 @@ export const getBookByIsbn = async (req: Request, res: Response): Promise<any> =
       res.status(500).json({ message: "Server error" });
     }
   }
+
+  export const updateBookQty = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { bookId } = req.params;
+      const { qty } = req.body;
+  
+      
+    
+      if (!qty || isNaN(parseInt(qty, 10)) || parseInt(qty, 10) < 0) {
+        res.status(400).json({ message: "Invalid quantity value" });
+        return;
+      }
+  
+      const book = await Book.findById(bookId);
+      if (!book) {
+        res.status(404).json({ message: "Book not found" });
+        return;
+      }
+  
+      book.qty = qty;
+      await book.save();
+  
+      res.status(200).json({ message: "Quantity updated successfully", book });
+    } catch (error: any) {
+      console.error("Error updating book quantity:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };

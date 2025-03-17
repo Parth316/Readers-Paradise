@@ -149,7 +149,9 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
           .min(3, 'Author must be at least 3 characters'),
         isbn: Yup.string()
           .required('ISBN is required')
-          .matches(/^[0-9-]+$/, 'ISBN must contain only numbers and hyphens'),
+          .matches(/^[0-9-]+$/, 'ISBN must contain only numbers and hyphens').
+          min(10, 'ISBN must be at least 10 characters').
+          max(10, 'ISBN must be a valid 10-digit number'),
         description: Yup.string()
           .required('Description is required')
           .min(10, 'Description must be at least 10 characters'),

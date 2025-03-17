@@ -55,7 +55,7 @@ const NewArrivals: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-row justify-center items-center bg-amber-50">
+    <div className="flex flex-row w-full justify-center items-center bg-amber-50">
       <div className="w-full px-20 py-5 bg-gray-700">
         <div className="max-w-[1200px] mx-auto">
           <h1 className="text-3xl text-white ms-5 py-3 text-center">
@@ -76,7 +76,6 @@ const NewArrivals: React.FC = () => {
                   />
                 ))
               : books.map((book) => (
-                  // Change this line in NewArrivals.tsx
                   <Link key={book._id} to={`/books/${book._id}`}>
                     <BookCard book={book} backendUrl={BACKEND_URL} />
                   </Link>

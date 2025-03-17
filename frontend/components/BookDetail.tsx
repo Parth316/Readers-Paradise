@@ -181,20 +181,20 @@ const BookDetail: React.FC = () => {
     <div className="min-h-screen bg-slate-50 py-12 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-slate-50 overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Image Slider Section */}
-            <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] p-6 border border-gray-300">
+            <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] bg-cover ps-10 bg-center">
               {book.images && book.images.length > 0 ? (
-                <Slider {...sliderSettings} className="h-full">
+                <Slider {...sliderSettings} className="h-full w-full">
                   {book.images.map((img, index) => {
                     const imageUrl = img.startsWith("http") ? img : `${BACKEND_URL}/${img}`;
                     return (
-                      <div key={index} className="h-full flex items-center justify-center p-4">
-                        <div className="relative w-full h-full max-h-[500px]">
+                      <div key={index} className="h-full flex items-center justify-center mt-12 ">
+                        <div className="flex w-full h-full max-h-fit align-center justify-center ">
                           <img
                             src={imageUrl}
                             alt={`${book.title} ${index + 1}`}
-                            className="w-2/3 h-auto object-contain rounded-xl shadow-lg"
+                            className="w-2/3 h-auto object-contain max-w-full max-h-full shadow-xl mb-10 rounded-md hover:scale-105 duration-300"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = "https://via.placeholder.com/150";

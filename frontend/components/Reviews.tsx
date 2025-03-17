@@ -4,6 +4,10 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+interface User {
+  _id: string;
+  name: string;
+}
 interface Review {
   _id: string;
   book: string;
@@ -19,7 +23,7 @@ interface ReviewsProps {
   reviews: Review[];
   setReviews: React.Dispatch<React.SetStateAction<Review[]>>;
   isAuthenticated: boolean;
-  user: any;
+  user: User|null;
   token: string | null;
 }
 
@@ -81,7 +85,7 @@ const Reviews: React.FC<ReviewsProps> = ({
     }
 
     const reviewData = {
-      user: user.id,
+      user: user.name,
       rating: newReview.rating,
       comment: newReview.comment,
     };
@@ -122,7 +126,7 @@ const Reviews: React.FC<ReviewsProps> = ({
     }
 
     const reviewData = {
-      user: user.id,
+      user: user.name,
       rating: newReview.rating,
       comment: newReview.comment,
     };
@@ -160,51 +164,10 @@ const Reviews: React.FC<ReviewsProps> = ({
 
   return (
     <div className="mt-12 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
-        Ratings & Reviews
-      </h2>
-
-      {/* Reviews List */}
-      <div className="mb-8">
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <div
-              key={review._id}
-              className="border-b border-gray-200 py-4 last:border-b-0"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-amber-600 font-semibold">
-                  {review.user}
-                </span>
-                <div className="flex items-center space-x-2">
-                  <span className="text-gray-500 text-sm">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                    {review.updatedAt && " (Edited)"}
-                  </span>
-                  {isAuthenticated && user && review.user === user.id && (
-                    <button
-                      onClick={() => handleEditReview(review)}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
-                    >
-                      Edit
-                    </button>
-                  )}
-                </div>
-              </div>
-              <StarRating rating={review.rating} readOnly />
-              <p className="text-gray-700 mt-2">{review.comment}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500 italic">
-            No reviews yet. Be the first to review!
-          </p>
-        )}
-      </div>
-
+      
       {/* Review Form */}
       <div>
-        <h3 className="text-xl font-serif font-semibold text-gray-900 mb-4">
+        <h3 className="text-2xl font-serif font-semibold text-gray-900 mb-4">
           {editingReview ? "Edit Your Review" : "Write a Review"}
         </h3>
         <form onSubmit={editingReview ? handleUpdateReview : handleReviewSubmit} className="space-y-4">
@@ -259,6 +222,52 @@ const Reviews: React.FC<ReviewsProps> = ({
             )}
           </div>
         </form>
+      </div>
+
+      <div className="container mt-10">
+      <h2 className="text-2xl font-serif font-bold text-gray-900 mb-6">
+        Ratings & Reviews
+      </h2>
+
+      {/* Reviews List */}
+      <div className="mb-8">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div
+              key={review._id}
+              className="border-b border-gray-200 py-4 last:border-b-0"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-amber-600 font-semibold">
+                  {review.user}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-500 text-sm">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                    {review.updatedAt && " (Edited)"}
+                  </span>
+                  {isAuthenticated && user && review.user === user.id && (
+                    <button
+                      onClick={() => handleEditReview(review)}
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+              </div>
+              <StarRating rating={review.rating} readOnly />
+              <p className="text-gray-700 mt-2">{review.comment}</p>
+              <br />
+              <hr></hr>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 italic">
+            No reviews yet. Be the first to review!
+          </p>
+        )}
+      </div>
       </div>
     </div>
   );

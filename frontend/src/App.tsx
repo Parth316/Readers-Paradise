@@ -17,7 +17,7 @@ import Index from "../admin/components/Index";
 import AddBook from "../admin/components/AddBook";
 import ListBooks from "../admin/components/ListBooks";
 import ForgotPassword from "../components/ForgotPassword";
-import EmptyCart from "../components/EmptyCart";
+// import EmptyCart from "../components/EmptyCart";
 import ListUsers from "../admin/components/ListUsers";
 import NewArrivals from "../components/NewArrivals";
 import BookDetail from "../components/BookDetail";
@@ -35,6 +35,7 @@ import BookCarousel from "../components/BookCarousel";
 import AdminProtectedRoute from "../components/AdminProtectedRoute";
 import OrderProcess from "../admin/components/OrderProcess";
 import PackedOrders from "../admin/components/PackedOrders";
+import Inventory from "../admin/components/Inventory";
 
 function App() {
   const dispatch = useDispatch();
@@ -136,14 +137,10 @@ function App() {
             </AdminProtectedRoute>
           }
         />
-        {/* <Route
-        path="/orderProcess"
-        element={
-          <AdminProtectedRoute>
-            <OrderProcess />
-          </AdminProtectedRoute>
-        }
-      /> */}
+      <Route path="/updateBookQty" element={<AdminProtectedRoute>
+        <Inventory />
+        </AdminProtectedRoute>
+        } />
         <Route
           path="/orderProcess/:orderId"
           element={

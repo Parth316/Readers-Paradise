@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
-
+  
   // Dashboard actions (existing)
   const dashboardActions = [
     {
@@ -29,6 +29,12 @@ const AdminPanel: React.FC = () => {
       icon: "👥",
       description: "Manage user accounts",
       action: () => navigate("/listUsers"),
+    },
+    {
+      title: "Manage Inventory",
+      icon: "👥",
+      description: "Manage user accounts",
+      action: () => navigate("/updateBookQty"),
     },
   ];
 

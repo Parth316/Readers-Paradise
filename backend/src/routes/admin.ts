@@ -1,6 +1,6 @@
 // backend/routes/admin.ts
 import express from 'express';
-import {addBooks,listBooks, deleteBook,updateBook, listUsers, getBookByIsbn} from '../controllers/adminController';
+import {addBooks,listBooks, deleteBook,updateBook, listUsers, getBookByIsbn, updateBookQty} from '../controllers/adminController';
 import {getOrders} from '../controllers/orderController'
 const router =express.Router();
 router.get("/",);
@@ -11,4 +11,5 @@ router.delete('/deleteBook/:id',deleteBook);
 router.put('/updateBook/:id',updateBook);
 router.get('/listUsers',listUsers);
 router.get('/isbn/:isbn',getBookByIsbn);
+router.put("/updateBookQty/:bookId", updateBookQty);
 export default router;

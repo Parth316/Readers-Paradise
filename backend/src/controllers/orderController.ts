@@ -1,8 +1,18 @@
 import { Request, Response } from "express";
 import Order from "../models/Orders";
+import mongoose from "mongoose";
+import Book from "../models/Book"; 
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string; email: string };
+}
+
+interface OrderItem {
+  bookId: string;
+  title: string;
+  price: number;
+  quantity: string|number;
+  image?: string;
 }
 
 export const createOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -25,21 +35,88 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
       return;
     }
 
-    const order = new Order({
-      userId,
-      items,
-      shippingAddress,
-      totalAmount,
-    });
+    // Start a MongoDB session for the transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    await order.save();
-    res.status(201).json({ message: "Order created successfully", order });
-  } catch (error) {
+    try {
+      // Validate and update stock for each item
+      for (const item of items ) {
+        // Find the book and validate stock
+        const book = await Book.findById(item.bookId).session(session);
+        if (!book) {
+          throw new Error(`Book with ID ${item.bookId} not found`);
+        }
+
+        // Parse qty (string) to a number
+        const currentStock = parseInt(book.qty, 10);
+        if (isNaN(currentStock)) {
+          throw new Error(`Invalid stock quantity for book: ${book.title}`);
+        }
+
+        // Check if there's enough stock
+        if (currentStock < item.quantity) {
+          throw new Error(
+            `Insufficient stock for book: ${book.title}. Available: ${currentStock}, Requested: ${item.quantity}`
+          );
+        }
+
+        // Decrease the stock and update the book using findOneAndUpdate
+        const newStock = currentStock - item.quantity;
+        const updatedBook = await Book.findOneAndUpdate(
+          { _id: item.bookId },
+          { qty: newStock.toString() },
+          { new: true, session } // Return the updated document, include in the transaction
+        );
+
+        if (!updatedBook) {
+          throw new Error(`Failed to update stock for book: ${item.bookId}`);
+        }
+      }
+
+      // Create the order
+      const order = new Order({
+        userId,
+        items,
+        shippingAddress,
+        totalAmount,
+        status: "pending",
+      });
+
+      await order.save({ session });
+
+      // Check for low stock books after updating
+      const lowStockBooks = [];
+      for (const item of items ) {
+        const book = await Book.findById(item.bookId).session(session);
+        if (book) {
+          const stock = parseInt(book.qty, 10);
+          if (stock < 5) {
+            lowStockBooks.push({ title: book.title, stock });
+          }
+        }
+      }
+
+      // Commit the transaction
+      await session.commitTransaction();
+
+      res.status(201).json({
+        message: "Order created successfully",
+        order,
+        lowStockBooks,
+      });
+    } catch (error: any) {
+      // Roll back the transaction on error
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  } catch (error: any) {
     console.error("Error creating order:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(400).json({ message: error.message || "Internal server error" });
   }
 };
-
 export const getOrders = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
