@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import {ToastContainer,toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { CheckCircle } from 'lucide-react';
+// import Explore from '../../components/Explore'
 const AddBook: React.FC = () => {
   const [message, setMessage] = useState('');
 
@@ -182,6 +183,8 @@ const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         <div className="container mx-auto pt-20 px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-lg p-6">
             <h2 className="text-3xl font-bold mb-6">Add a New Book</h2>
+
+            {/* <Explore/> */}
             {message && <p className="text-center text-green-500 mb-4">{message}</p>}
             <Form>
               {/* Title and Author */}

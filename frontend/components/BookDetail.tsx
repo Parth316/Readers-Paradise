@@ -30,6 +30,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  isbn: string;
 }
 
 interface Review {
@@ -140,6 +141,7 @@ const BookDetail: React.FC = () => {
       price: book.price,
       quantity: quantity,
       image: book.images[0] || "",
+      isbn: book.isbn || "",
     };
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
     const existingItemIndex = existingCart.findIndex((item: CartItem) => item._id === book._id);

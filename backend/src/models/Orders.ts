@@ -6,6 +6,7 @@ interface IItem {
   price: number;
   quantity: number;
   image?: string;
+  isbn?: string;
 }
 
 interface IShippingAddress {
@@ -36,6 +37,7 @@ const ItemSchema: Schema = new Schema({
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
   image: { type: String },
+  isbn: { type: String, required: true },
 });
 
 const ShippingAddressSchema: Schema = new Schema({

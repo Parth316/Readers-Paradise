@@ -2,7 +2,6 @@
 import React from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setSelectedBook } from "../redux/bookSlice";
 import { Book } from "../redux/bookSlice";
@@ -20,7 +19,6 @@ const BookCard: React.FC<BookCardProps> = ({
   fallbackImage = "/images/nobookfound.png",
   backendUrl,
 }) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   if (loading) {

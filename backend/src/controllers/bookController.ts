@@ -54,6 +54,8 @@ export const searchBooks = async (req: Request, res: Response): Promise<void> =>
       res.status(500).json({ error: 'Internal server error' });
     }
   };
+
+  // Fetch books from the Open Library API using Axios library
 const fetchBooks = async (query: string) => {
     try {
         console.log("Hi from fetchBooks function");

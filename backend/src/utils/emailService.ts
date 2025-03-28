@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-
 // Generate a 4-digit reset code
 export const generateResetCode = (): string => {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -11,8 +10,8 @@ export const sendEmail = async ({ to, subject, text }: { to: string; subject: st
   const transporter = nodemailer.createTransport({
     service: "Gmail", // Use your email service (e.g., Gmail, Outlook, etc.)
     auth: {
-      user:process.env.email||"parthprajapati316@gmail.com", // Your email address
-      pass: "tfod ttsw seia sxoq", // Your email password or app-specific password
+      user:process.env.email,// Your email address
+      pass: process.env.password // Your email password or app-specific password
     },
   });
 

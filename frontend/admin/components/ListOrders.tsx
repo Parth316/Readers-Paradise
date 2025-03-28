@@ -21,6 +21,9 @@ interface ShippingAddress {
   city: string;
   postalCode: string;
   country: string;
+  phoneNumber: string;
+  email: string;
+  deliveryInstructions?: string;
 }
 
 interface Order {
@@ -306,7 +309,10 @@ const ListOrders: React.FC = () => {
                           <div>
                             <p className="text-gray-800 font-medium">{item.title}</p>
                             <p className="text-gray-600 text-sm">
-                              Qty: {item.quantity} @ ${item.price.toFixed(2)}
+                              <strong>Qty:</strong> {item.quantity} - ${item.price.toFixed(2)}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              <strong>ISBN:</strong>{item.isbn}
                             </p>
                           </div>
                         </div>
@@ -318,14 +324,24 @@ const ListOrders: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-4">
+                <div className="border-t border-gray-200 pt-1">
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">
                     Shipping Address
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 pb-2">
                     {order.shippingAddress.recipientName}, {order.shippingAddress.address},{" "}
                     {order.shippingAddress.city}, {order.shippingAddress.postalCode},{" "}
                     {order.shippingAddress.country}
+                  </p>
+                </div>
+
+                
+                <div className="border-t border-gray-200 pt-1">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    NoteCard
+                  </h3>
+                  <p className="text-gray-600 pb-2">
+                    {order.shippingAddress.deliveryInstructions}
                   </p>
                 </div>
 

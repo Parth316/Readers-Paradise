@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import BookCard from "./BookCard";
-
+import {API_URL} from "../utils/config"; 
 interface Book {
   _id: string;
   title: string;
@@ -18,14 +18,13 @@ interface Book {
 const AllBooks: React.FC = () => {
   const { category } = useParams<{ category: string }>(); // Get category from URL
   const [books, setBooks] = useState<Book[]>([]);
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get<Book[]>(`${BACKEND_URL}/api/books/${category}`);
+        const response = await axios.get<Book[]>(`${API_URL}/api/books/${category}`);
         setBooks(response.data);
         setLoading(false);
         setError(null);

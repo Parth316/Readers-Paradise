@@ -36,7 +36,6 @@ import AdminProtectedRoute from "../components/AdminProtectedRoute";
 import OrderProcess from "../admin/components/OrderProcess";
 import PackedOrders from "../admin/components/PackedOrders";
 import Inventory from "../admin/components/Inventory";
-
 function App() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);

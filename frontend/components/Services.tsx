@@ -1,212 +1,381 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  Book,
+  UserCheck,
+  Users,
+  BookOpen,
+  Package,
+  Headphones,
+  ShoppingCart,
+  Edit,
+  CheckCircle,
+  Eye,
+  Search,
+  Filter,
+  Layout,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 const Services: React.FC = () => {
+  const [isProjectDetailsVisible, setIsProjectDetailsVisible] = useState(false);
+
+  const toggleProjectDetails = () => {
+    setIsProjectDetailsVisible(!isProjectDetailsVisible);
+  };
+
   return (
-    <div className="bg-amber-50 pt-20">
+    <div className="bg-amber-50 pt-16">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#D89B30] to-[#FFD58D] py-16 text-center">
+      <section className="bg-gradient-to-r from-[#D89B30] to-[#FFD58D] py-12 text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#3f3d3c] mb-4">
+          <h1 className="text-4xl font-bold text-[#3f3d3c] mb-4">
             Our Services
           </h1>
-          <p className="text-lg md:text-xl text-[#3f3d3c] max-w-3xl mx-auto">
-            At Reader’s Paradise, we offer a range of services designed to make
-            your reading experience exceptional. From finding your next great
-            read to connecting with fellow book lovers, we’ve got you covered.
+          <p className="text-lg text-[#3f3d3c] max-w-2xl mx-auto">
+            At Reader’s Paradise, we offer services to enhance your reading
+            experience, from discovering books to connecting with others.
           </p>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-16">
+      {/* Features Section */}
+      <section className="py-12 bg-amber-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Service 1: Online Bookstore */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"
-                  />
-                </svg>
+          <h2 className="text-3xl font-bold text-[#3f3d3c] text-center mb-6">
+            Key Features of Reader’s Paradise
+          </h2>
+
+          {/* Users Features */}
+          <h3 className="text-xl font-semibold text-[#3f3d3c] mb-4 text-center">
+            For Users
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <ShoppingCart className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Online Bookstore
-              </h3>
-              <p className="text-gray-700 text-center">
-                Browse and purchase from our extensive collection of books
-                spanning all genres—fiction, non-fiction, classics, and more.
-                Enjoy a seamless shopping experience with fast delivery and
-                secure payments.
+              <p className="text-sm text-gray-700 text-center">Login</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <ShoppingCart className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Sign up</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <ShoppingCart className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">
+                Forgot Password
               </p>
             </div>
-
-            {/* Service 2: Personalized Recommendations */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01"
-                  />
-                </svg>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <ShoppingCart className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Personalized Recommendations
-              </h3>
-              <p className="text-gray-700 text-center">
-                Discover books tailored to your tastes. Our smart recommendation
-                system analyzes your reading history and preferences to suggest
-                titles you’ll love.
+              <p className="text-sm text-gray-700 text-center">Add to Cart</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Edit className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Add Review</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Edit className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Edit Review</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <CheckCircle className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Checkout</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <CheckCircle className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">
+                Custom Message Gift Card Option
               </p>
             </div>
+          </div>
 
-            {/* Service 3: Book Clubs */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
+          {/* Admin Features */}
+          <h3 className="text-xl font-semibold text-[#3f3d3c] mb-4 text-center">
+            For Admin
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Eye className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Book Clubs
-              </h3>
-              <p className="text-gray-700 text-center">
-                Join our vibrant book clubs to connect with fellow readers.
-                Participate in discussions, share your thoughts, and make new
-                friends who share your love for books.
+              <p className="text-sm text-gray-700 text-center">Dashboard</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Book className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Add Book</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Book className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">List Book</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Edit className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Edit Book</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Book className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Delete Book</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Users className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">See User List</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Eye className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">See Orders</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Search className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Search Orders</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Filter className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">Sort Orders</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Layout className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">
+                List View/Grid View Saving
               </p>
             </div>
-
-            {/* Service 4: Author Events */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 11H5m14 0a8 8 0 01-8 8m8-8a8 8 0 00-8-8m8 8h2m-2 0v2m-14-2H3m2 0a8 8 0 018 8m-8-8a8 8 0 008-8m-8 8H3m2 0v2"
-                  />
-                </svg>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <CheckCircle className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Author Events & Signings
-              </h3>
-              <p className="text-gray-700 text-center">
-                Attend exclusive events with your favorite authors. From virtual
-                book signings to live Q&A sessions, get closer to the creators
-                behind the stories you love.
+              <p className="text-sm text-gray-700 text-center">
+                Process Orders
               </p>
             </div>
-
-            {/* Service 5: Fast Delivery */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                  />
-                </svg>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Package className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Fast & Reliable Delivery
-              </h3>
-              <p className="text-gray-700 text-center">
-                Get your books delivered to your doorstep quickly and safely.
-                We partner with trusted shipping services to ensure your order
-                arrives on time, every time.
+              <p className="text-sm text-gray-700 text-center">Pack Orders</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Package className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">
+                Generate Shipping Label
               </p>
             </div>
-
-            {/* Service 6: Customer Support */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-              <div className="flex justify-center mb-4">
-                <svg
-                  className="w-12 h-12 text-[#D89B30]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <CheckCircle className="w-5 h-5 text-[#D89B30]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#3f3d3c] text-center mb-2">
-                Dedicated Customer Support
-              </h3>
-              <p className="text-gray-700 text-center">
-                Our friendly support team is here to assist you with any
-                questions or concerns. Reach out via email, phone, or live chat
-                for prompt and helpful service.
+              <p className="text-sm text-gray-700 text-center">
+                Generate Gift Notecard
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md hover:bg-[#FFD58D] hover:scale-105 transition-all duration-200">
+              <div className="flex justify-center mb-2">
+                <Search className="w-5 h-5 text-[#D89B30]" />
+              </div>
+              <p className="text-sm text-gray-700 text-center">
+                ISBN Matching to Reduce Errors
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="bg-gradient-to-r from-[#D89B30] to-[#FFD58D] py-16 text-center">
+      {/* Project Details Section */}
+      <section className="py-12 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#3f3d3c] mb-4">
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={toggleProjectDetails}
+              className="flex items-center bg-[#D89B30] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#c1a36f] transition-colors duration-200"
+            >
+              {isProjectDetailsVisible
+                ? "Hide Project Details"
+                : "Show Project Details"}
+              {isProjectDetailsVisible ? (
+                <ChevronUp className="w-5 h-5 ml-2" />
+              ) : (
+                <ChevronDown className="w-5 h-5 ml-2" />
+              )}
+            </button>
+          </div>
+
+          {isProjectDetailsVisible && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-2xl font-bold text-[#3f3d3c] mb-4">
+                Project Details
+              </h2>
+
+              {/* Why MongoDB */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Why MongoDB?
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>
+                    Flexible, schema-less database for storing diverse order
+                    data
+                  </li>
+                  <li>
+                    Scalable and handles large volumes of data efficiently
+                  </li>
+                  <li>Integrates well with Node.js backend</li>
+                </ul>
+              </div>
+              {/* Security */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Security
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>Password encryption using bcrypt</li>
+                  <li>JWT token for security (1-hour expiry)</li>
+                  <li>Admin protected routes</li>
+                  <li>Role-based authentication</li>
+                </ul>
+              </div>
+
+              {/* Why Redux State Management */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Why Redux State Management?
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>
+                    Central state management library for accessing states
+                    between multiple components
+                  </li>
+                  <li>Easily scalable for large apps</li>
+                </ul>
+              </div>
+              {/* Future Enhancements */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Future Enhancements
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>Add real-time tracking integration with carriers</li>
+                  <li>
+                    Introduce automated email notifications for order updates
+                  </li>
+                  <li>JWT token store in the database</li>
+                  <li>Input sanitization</li>
+                  <li>More control over User management</li>
+                  <li>Automatic Invoice generation</li>
+                </ul>
+              </div>
+
+              {/* Current Problems */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Current Problems with the Project
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>No real-time tracking</li>
+                  <li>
+                    Responsive to some extent but not fully responsive due to
+                    complexity of components
+                  </li>
+                </ul>
+              </div>
+
+              {/* Why Future Ready */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Why Future Ready?
+                </h3>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>Redux state management</li>
+                  <li>More organized structure with RESTful APIs</li>
+                  <li>
+                    createAsyncThunk for handling asynchronous logic,
+                    particularly for actions that involve side effects like data
+                    fetching, file uploads, or other asynchronous tasks
+                  </li>
+                  <li>
+                    Already implemented Open Library API to fetch data directly
+                    from the archive
+                  </li>
+                </ul>
+              </div>
+
+              {/* Why It's Different */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-[#3f3d3c] mb-2">
+                  Why It’s Different?
+                </h3>
+                <h4 className="text-lg font-semibold text-[#3f3d3c] mb-1">
+                  User
+                </h4>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700 mb-2">
+                  <li>Notecard feature for presents</li>
+                </ul>
+                <h4 className="text-lg font-semibold text-[#3f3d3c] mb-1">
+                  Admin
+                </h4>
+                <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                  <li>Matching ISBN feature to reduce errors to 99%</li>
+                  <li>
+                    Very common features that sometimes help a lot (Search,
+                    Sort, Back to top)
+                  </li>
+                  <li>Enhanced User Experience compared to other sites</li>
+                  <li>Automatic package slip generation for custom carriers</li>
+                  <li>Automatic Notecard generation</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="bg-gradient-to-r from-[#D89B30] to-[#FFD58D] py-12 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-[#3f3d3c] mb-4">
             Ready to Explore Reader’s Paradise?
           </h2>
-          <p className="text-lg md:text-xl text-[#3f3d3c] max-w-3xl mx-auto mb-8">
-            Sign up today to start enjoying our services and become part of our
-            growing community of book lovers.
+          <p className="text-lg text-[#3f3d3c] max-w-2xl mx-auto mb-6">
+            Sign up today to enjoy our services and join our community of book
+            lovers.
           </p>
           <Link
             to="/signup"
-            className="inline-block bg-slate-600 text-white px-6 py-3 rounded-full text-lg font-semibold hover:bg-[#c1a36f] hover:text-black transition duration-300"
+            className="inline-block bg-slate-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#c1a36f] hover:text-black transition-colors duration-200"
           >
             Get Started
           </Link>

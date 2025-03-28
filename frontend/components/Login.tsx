@@ -6,8 +6,8 @@ import { loginSuccess, loginFailure, resetError } from "../redux/authSlice";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("admin@gmail.com"); // 
-  const [password, setPassword] = useState<string>("Admin@123"); // Removed hardcoded value
+  const [email, setEmail] = useState<string>("");  
+  const [password, setPassword] = useState<string>(""); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const error = useSelector((state: RootState) => state.auth.error);

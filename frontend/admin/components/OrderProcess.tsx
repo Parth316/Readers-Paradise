@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { jsPDF } from "jspdf";
 import JsBarcode from "jsbarcode";
 import { ToastContainer } from "react-toastify";
-import { Check, CircleMinus} from "lucide-react";
+import { CircleMinus } from "lucide-react";
 
 interface Item {
   bookId: string;
@@ -13,6 +13,7 @@ interface Item {
   price: number;
   quantity: number;
   image?: string;
+  isbn: string; // Changed to required since it's stored in the database
 }
 
 interface ShippingAddress {
@@ -43,6 +44,14 @@ interface Box {
   items: Item[];
 }
 
+interface IsbnResult {
+  bookId: string;
+  title: string;
+  isbn: string; // Include ISBN in the response
+}
+
+const BACKEND_URL = "http://localhost:5000";
+
 const OrderProcess: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
@@ -53,12 +62,11 @@ const OrderProcess: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [boxes, setBoxes] = useState<Box[]>([]);
-  const [selectedBoxSize, setSelectedBoxSize] = useState<string>();
-  const [isbnInput, setIsbnInput] = useState<string>("");
-  const [isbnMatch, setIsbnMatch] = useState<string|null>(null);
-  const [isbnError, setIsbnError] = useState<string | null>(null);
-
-  const BACKEND_URL = "http://localhost:5000";
+  const [selectedBoxSize, setSelectedBoxSize] = useState<string>("");
+  // Per-item ISBN state
+  const [isbnInputs, setIsbnInputs] = useState<string[]>([]);
+  const [isbnMatches, setIsbnMatches] = useState<(IsbnResult | null)[]>([]);
+  const [isbnErrors, setIsbnErrors] = useState<(string | null)[]>([]);
 
   const boxSizes = [
     "Small (10x8x4)",
@@ -76,6 +84,12 @@ const OrderProcess: React.FC = () => {
 
   useEffect(() => {
     const fetchOrder = async () => {
+      if (!orderId) {
+        setError("Order ID is missing.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `${BACKEND_URL}/api/orders/${orderId}`,
@@ -85,9 +99,13 @@ const OrderProcess: React.FC = () => {
             },
           }
         );
-        setOrder(response.data);
-        setPackedItems(new Array(response.data.items.length).fill(false));
-        setIsPacked(response.data.status === "packed");
+        const fetchedOrder = response.data as Order;
+        setOrder(fetchedOrder);
+        setPackedItems(new Array(fetchedOrder.items.length).fill(false));
+        setIsbnInputs(new Array(fetchedOrder.items.length).fill(""));
+        setIsbnMatches(new Array(fetchedOrder.items.length).fill(null));
+        setIsbnErrors(new Array(fetchedOrder.items.length).fill(null));
+        setIsPacked(fetchedOrder.status === "packed");
         setError(null);
       } catch (err: any) {
         const errorMessage = "Failed to fetch order";
@@ -101,7 +119,7 @@ const OrderProcess: React.FC = () => {
     fetchOrder();
   }, [orderId]);
 
-  const fetchBookByIsbn = async (isbn: string) => {
+  const fetchBookByIsbn = async (isbn: string, index: number) => {
     try {
       const response = await axios.get(
         `${BACKEND_URL}/api/admin/isbn/${isbn}`,
@@ -109,29 +127,89 @@ const OrderProcess: React.FC = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      setIsbnMatch(response.data);
-      setIsbnError(null);
+      const bookData = response.data as IsbnResult;
+      return bookData; // Return the fetched book data
     } catch (err: any) {
-      setIsbnMatch(null);
-      setIsbnError(
+      throw new Error(
         err.response?.data?.message || "No book found with this ISBN."
       );
     }
   };
-  // Add this to handle ISBN input change
-  const handleIsbnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleIsbnChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const isbn = e.target.value;
-    setIsbnInput(isbn);
-    if (isbn.length >= 10) {
-      // Assuming ISBN-10 or ISBN-13 length
-      fetchBookByIsbn(isbn);
-    } else {
-      setIsbnMatch(null);
-      setIsbnError(null);
+    setIsbnInputs((prev) => {
+      const newInputs = [...prev];
+      newInputs[index] = isbn;
+      return newInputs;
+    });
+
+    // Clear previous match and error before fetching
+    setIsbnMatches((prev) => {
+      const newMatches = [...prev];
+      newMatches[index] = null;
+      return newMatches;
+    });
+    
+    setIsbnErrors((prev) => {
+      const newErrors = [...prev];
+      newErrors[index] = null;
+      return newErrors;
+    });
+
+    if (isbn.length >= 10 && order) {
+      fetchBookByIsbn(isbn, index)
+        .then((bookData) => {
+          const actualIsbn = order.items[index].isbn;
+
+          if (bookData.isbn !== actualIsbn) {
+            setIsbnErrors((prev) => {
+              const newErrors = [...prev];
+              newErrors[index] = "ISBN does not match this book.";
+              return newErrors;
+            });
+          } else {
+            setIsbnMatches((prev) => {
+              const newMatches = [...prev];
+              newMatches[index] = bookData;
+              return newMatches;
+            });
+            setIsbnErrors((prev) => {
+              const newErrors = [...prev];
+              newErrors[index] = null;
+              return newErrors;
+            });
+          }
+        })
+        .catch((error) => {
+          setIsbnErrors((prev) => {
+            const newErrors = [...prev];
+            newErrors[index] = error.message;
+            return newErrors;
+          });
+          setIsbnMatches((prev) => {
+            const newMatches = [...prev];
+            newMatches[index] = null;
+            return newMatches;
+          });
+        });
+    } else if (isbn.length < 10) {
+      setIsbnMatches((prev) => {
+        const newMatches = [...prev];
+        newMatches[index] = null;
+        return newMatches;
+      });
+      setIsbnErrors((prev) => {
+        const newErrors = [...prev];
+        newErrors[index] = null;
+        return newErrors;
+      });
     }
   };
 
-  // Updated addBox function
   const addBox = () => {
     if (!selectedBoxSize) {
       toast.error("Please select a box size.");
@@ -141,7 +219,6 @@ const OrderProcess: React.FC = () => {
     setSelectedBoxSize(""); // Reset selection after adding
   };
 
-  // Updated removeBox function
   const removeBox = (index: number) => {
     setBoxes(boxes.filter((_, i) => i !== index));
   };
@@ -161,6 +238,10 @@ const OrderProcess: React.FC = () => {
       toast.error("No order data available to pack.");
       return;
     }
+    if (!order.items.length) {
+      toast.error("No items to pack in this order.");
+      return;
+    }
     if (!packedItems.every((p) => p)) {
       toast.error("Please ensure all items are packed.");
       return;
@@ -169,12 +250,16 @@ const OrderProcess: React.FC = () => {
       toast.info("Order is already packed.");
       return;
     }
+    if (!boxes.length) {
+      toast.error("Please add at least one box before packing.");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       await axios.post(
         `${BACKEND_URL}/api/orders/${order._id}/pack`,
-        {},
+        { boxes }, // Include boxes in the request
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -196,6 +281,66 @@ const OrderProcess: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const generateNotecard = () => {
+    if (!order || !order.shippingAddress.deliveryInstructions) {
+      toast.error("No notecard message available to print.");
+      return;
+    }
+  
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "in",
+      format: [4, 6], // Small notecard size (4x6 inches)
+    });
+  
+    // Add a light background
+    doc.setFillColor(245, 245, 245);
+    doc.rect(0, 0, 4, 6, "F");
+  
+    // Add a logo at the top (centered)
+    const logoUrl = "../images/logo.png"; // Replace with your actual logo URL
+    const logoWidth = 1.5; // Width of the logo in inches
+    const logoHeight = 0.5; // Height of the logo in inches
+    const logoX = (4 - logoWidth) / 2; // Center the logo horizontally
+    const logoY = 0.5; // Position 0.5 inches from the top
+    try {
+      doc.addImage(logoUrl, "PNG", logoX, logoY, logoWidth, logoHeight);
+    } catch (error) {
+      console.error("Failed to load logo:", error);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(10);
+      doc.setTextColor(150, 150, 150);
+      doc.text("[Logo Placeholder]", logoX + logoWidth / 2, logoY + logoHeight / 2, { align: "center" });
+    }
+  
+    // Add a decorative divider line
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.02);
+    doc.line(0.5, logoY + logoHeight + 0.3, 3.5, logoY + logoHeight + 0.3);
+  
+    // Add the notecard message
+    const message = order.shippingAddress.deliveryInstructions;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(40, 40, 40);
+  
+    // Split the message into lines to fit within the page width
+    const maxWidth = 3.5; // Maximum width for the text in inches
+    const lines = doc.splitTextToSize(message, maxWidth);
+    const textY = logoY + logoHeight + 0.5; // Position below the divider
+    doc.text(lines, 0.25, textY, { align: "left" });
+  
+    // Add a simple border
+    doc.setDrawColor(150, 150, 150);
+    doc.setLineWidth(0.01);
+    doc.rect(0.2, 0.2, 3.6, 5.6);
+  
+    // Output the PDF
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, "_blank");
   };
 
   const generateShippingLabel = () => {
@@ -369,94 +514,107 @@ const OrderProcess: React.FC = () => {
           Process Order #{order._id}
         </h1>
 
-        <div className="felx grid-cols-1 lg:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Order Summary */}
           <div className="lg:col-span-2">
             <div className="bg-white p-6 rounded-lg shadow-md mb-8">
               <h2 className="text-2xl font-semibold text-[#3f3d3c] mb-4">
                 Order Summary
               </h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="p-4"></th>
-                      <th className="p-4">Image</th>
-                      <th className="p-4">Title</th>
-                      <th className="p-4">Quantity</th>
-                      <th className="p-4">Price</th>
-                      <th className="p-4">Total</th>
-                      <th className="p-4">ISBN</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items.map((item, index) => {
-                      const imageUrl = item.image?.startsWith("http")
-                        ? item.image
-                        : `${BACKEND_URL}/${item.image}`;
-                      return (
-                        <tr
-                          key={item.bookId}
-                          className="border-b border-gray-200"
-                        >
-                          <td className="p-4">
-                            <input
-                              type="checkbox"
-                              checked={packedItems[index]}
-                              onChange={() => toggleItemPacked(index)}
-                              disabled={isPacked || isSubmitting}
-                              className="h-5 w-5 text-[#d2b47f] focus:ring-[#d2b47f] border-gray-300 rounded"
-                            />
-                          </td>
-                          <td className="p-4">
-                            {item.image && (
-                              <img
-                                src={
-                                  imageUrl || "https://via.placeholder.com/150"
-                                }
-                                alt={item.title}
-                                className="w-10 h-10 object-cover rounded-md"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src =
-                                    "https://via.placeholder.com/150";
-                                }}
+              {order.items.length === 0 ? (
+                <p className="text-gray-600">No items in this order.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="p-4"></th>
+                        <th className="p-4">Image</th>
+                        <th className="p-4">Title</th>
+                        <th className="p-4">Quantity</th>
+                        <th className="p-4">Price</th>
+                        <th className="p-4">Total</th>
+                        <th className="p-4">ISBN</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {order.items.map((item, index) => {
+                        const imageUrl = item.image?.startsWith("http")
+                          ? item.image
+                          : `${BACKEND_URL}/${item.image}`;
+                        return (
+                          <tr
+                            key={item.bookId}
+                            className="border-b border-gray-200"
+                          >
+                            <td className="p-4">
+                              <input
+                                type="checkbox"
+                                checked={packedItems[index]}
+                                onChange={() => toggleItemPacked(index)}
+                                disabled={
+                                  isPacked ||
+                                  isSubmitting ||
+                                  isbnErrors[index] !== null
+                                } // Disable if ISBN doesn't match
+                                className="h-5 w-5 text-[#d2b47f] focus:ring-[#d2b47f] border-gray-300 rounded"
                               />
-                            )}
-                          </td>
-                          <td className="p-4 text-gray-800 font-medium">
-                            {item.title}
-                          </td>
-                          <td className="p-4 text-gray-600">{item.quantity}</td>
-                          <td className="p-4 text-gray-600">
-                            ${item.price.toFixed(2)}
-                          </td>
-                          <td className="p-4 text-gray-700 font-semibold">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              value={isbnInput}
-                              onChange={handleIsbnChange}
-                              placeholder="Enter ISBN"
-                              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                            />
-                            {isbnMatch && (
-                              <p className="text-green-600 mt-1 ms-3">
-                                Match: {isbnMatch.title}
-                              </p>
-                            )}
-                            {isbnError && (
-                              <p className="text-red-600 mt-1">{isbnError}</p>
-                            )}{" "}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            </td>
+                            <td className="p-4">
+                              {item.image && (
+                                <img
+                                  src={
+                                    imageUrl ||
+                                    "https://via.placeholder.com/150"
+                                  }
+                                  alt={item.title}
+                                  className="w-10 h-10 object-cover rounded-md"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src =
+                                      "https://via.placeholder.com/150";
+                                  }}
+                                />
+                              )}
+                            </td>
+                            <td className="p-4 text-gray-800 font-medium">
+                              {item.title}
+                            </td>
+                            <td className="p-4 text-gray-600">
+                              {item.quantity}
+                            </td>
+                            <td className="p-4 text-gray-600">
+                              ${item.price.toFixed(2)}
+                            </td>
+                            <td className="p-4 text-gray-700 font-semibold">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </td>
+                            <td className="p-4">
+                              <input
+                                type="text"
+                                value={isbnInputs[index]}
+                                onChange={(e) => handleIsbnChange(e, index)}
+                                placeholder="Enter ISBN"
+                                className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-600"
+                              />
+                              {isbnMatches[index] && !isbnErrors[index] && (
+                                <p className="text-green-600 mt-1 ms-3">
+                                  Match: {isbnMatches[index]?.title}
+                                </p>
+                              )}
+                              {isbnErrors[index] && (
+                                <p className="text-red-600 mt-1">
+                                  {isbnErrors[index]}
+                                </p>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <div className="flex justify-between mt-4">
                 <h3 className="text-lg font-semibold text-[#3f3d3c]">Total:</h3>
                 <p className="text-lg font-semibold text-[#3f3d3c]">
@@ -484,8 +642,6 @@ const OrderProcess: React.FC = () => {
                     {order.shippingAddress.country}
                   </p>
                 </div>
-
-                {/* Box Management  */}
                 <div>
                   <h3 className="text-lg font-semibold text-[#3f3d3c] mb-1">
                     Carrier
@@ -510,6 +666,7 @@ const OrderProcess: React.FC = () => {
                       onChange={(e) => setSelectedBoxSize(e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-600"
                     >
+                      <option value="">Select a box size</option>
                       {boxSizes.map((size) => (
                         <option key={size} value={size}>
                           {size}
@@ -523,35 +680,48 @@ const OrderProcess: React.FC = () => {
                       >
                         Add Box
                       </button>
-                     
                     </div>
                     <div>
                       <p className="text-gray-600">Current Boxes:</p>
-                      <ul className="list-disc pl-5 text-gray-600">
-                        {boxes.map((box, index) => (
-                          <li
-                            key={index}
-                            className="flex items-center justify-between py-2"
-                          >
-                            <span>{box.size}</span>
-                            <button
-                              onClick={() => removeBox(index)}
-                              className="text-white font-extrabold hover:text-red-800 bg-red-500 w-8 h-8 border  rounded-3xl focus:outline-none"
+                      {boxes.length === 0 ? (
+                        <p className="text-gray-500">No boxes added.</p>
+                      ) : (
+                        <ul className="list-disc pl-5 text-gray-600">
+                          {boxes.map((box, index) => (
+                            <li
+                              key={index}
+                              className="flex items-center justify-between py-2"
                             >
-                              -
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                              <span>{box.size}</span>
+                              <button
+                                onClick={() => removeBox(index)}
+                                className="text-white font-extrabold hover:text-red-800 bg-red-500 w-8 h-8 border rounded-3xl focus:outline-none"
+                              >
+                                <CircleMinus size={16} className="mx-auto" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
                 </div>
+                {order.shippingAddress.deliveryInstructions&&<button
+                className="w-full text-lg bg-slate-600 hover:bg-slate-800 text-white py-3 rounded-full border-2 border-gray-600 transition duration-300"
+                onClick={generateNotecard}
+                >Print Notecard</button>}
                 {!isPacked ? (
                   <button
                     onClick={completePacking}
-                    disabled={!packedItems.every((p) => p) || isSubmitting}
+                    disabled={
+                      !packedItems.every((p) => p) ||
+                      isSubmitting ||
+                      boxes.length === 0
+                    }
                     className={`w-full text-lg bg-slate-600 text-white py-3 rounded-full border-2 border-gray-600 transition duration-300 ${
-                      !packedItems.every((p) => p) || isSubmitting
+                      !packedItems.every((p) => p) ||
+                      isSubmitting ||
+                      boxes.length === 0
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:bg-[#c1a36f] hover:text-black"
                     }`}

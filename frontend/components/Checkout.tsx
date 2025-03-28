@@ -12,6 +12,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  isbn: string;
 }
 
 interface ShippingAddress {
@@ -104,6 +105,7 @@ const Checkout: React.FC = () => {
           price: item.price,
           quantity: item.quantity,
           image: item.image,
+          isbn: item.isbn,
         })),
         shippingAddress,
         totalAmount: totalPrice,
@@ -132,9 +134,9 @@ const Checkout: React.FC = () => {
               lowStockBooks: response.data.lowStockBooks, // Include if using previous low stock feature
             },
           });
-        }, 3500); // 2.5 seconds delay
+        }, 2500); // 2.5 seconds delay
       }
-    } catch (error: any) {
+    } catch (error) {
       setShowLoading(false); // Hide GIF on error
       const errorMessage =
         error.response?.data?.message || "An error occurred while placing the order.";
@@ -366,12 +368,15 @@ const Checkout: React.FC = () => {
                       required
                     />
                   </div>
+                  <div className="container border border-x-2 p-5 rounded ">
+
+                  <h2 className="text-xl font-semibold pb-1">Gift Options</h2><hr />
                   <div>
                     <label
                       htmlFor="deliveryInstructions"
-                      className="block text-gray-700 font-medium mb-1"
+                      className="mt-2 block text-gray-700 font-medium mb-1"
                     >
-                      Delivery Instructions (Optional)
+                      Add a notecard for your loved ones for gifts(Optional)
                     </label>
                     <input
                       type="text"
@@ -379,10 +384,12 @@ const Checkout: React.FC = () => {
                       name="deliveryInstructions"
                       value={shippingAddress.deliveryInstructions}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
-                      placeholder="Leave at front door"
+                      className="w-full px-3 py-2 border mb-2 border-gray-300 rounded-md text-[#3f3d3c] focus:outline-none focus:ring-2 focus:ring-[#d2b47f]"
+                      placeholder="e.g. Place Happy Birthday notecard inside the package"
                     />
                   </div>
+                 
+                      </div>
                   <div>
                     <label
                       htmlFor="paymentMethod"

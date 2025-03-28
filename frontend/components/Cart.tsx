@@ -16,6 +16,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  isbn: string;
 }
 
 const Cart: React.FC = () => {
@@ -84,6 +85,7 @@ const Cart: React.FC = () => {
           price: item.price,
           quantity: item.quantity,
           image: item.image,
+          isbn: item.isbn, 
         })),
       };
 
@@ -199,6 +201,9 @@ const Cart: React.FC = () => {
                         </div>
                         <p className="text-gray-800 font-medium">
                           Total: ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+                        <p className="text-gray-800 font-medium">
+                          ISBN: {item.isbn}
                         </p>
                       </div>
                       <button

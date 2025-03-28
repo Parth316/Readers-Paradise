@@ -19,7 +19,8 @@ const BookList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:5000/api/books`, {
+      
+      const response = await axios.get(`${BACKEND_URL}/api/books`, {
         params: { q: query }
       });
       console.log("Data " + response.data);

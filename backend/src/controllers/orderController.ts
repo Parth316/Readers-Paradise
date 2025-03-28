@@ -13,12 +13,13 @@ interface OrderItem {
   price: number;
   quantity: string|number;
   image?: string;
+  isbn: string;
 }
 
 export const createOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
-    const { items, shippingAddress, totalAmount } = req.body;
+    const { items, shippingAddress, totalAmount} = req.body;
 
     if (!userId) {
       res.status(401).json({ message: "User not authenticated" });
@@ -117,6 +118,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
     res.status(400).json({ message: error.message || "Internal server error" });
   }
 };
+
 export const getOrders = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
