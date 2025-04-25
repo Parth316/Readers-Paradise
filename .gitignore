@@ -1,1 +1,25 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
 .env
+
+# Build output (if applicable)
+dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor/IDE files
+.vscode/
+*.code-workspace
+
+# macOS system files
+.DS_Store
+
+# TypeScript (if applicable)
+tsconfig.json
