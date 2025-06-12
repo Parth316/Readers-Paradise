@@ -113,7 +113,7 @@ const ListOrders: React.FC = () => {
 
   const sortOrders = (ordersToSort: Order[], option: string): Order[] => {
     switch (option) {
-      case "bookTitle":
+      case "bookTitle":x
         return ordersToSort.sort((a, b) => {
           const aTitle = a.items[0]?.title || "";
           const bTitle = b.items[0]?.title || "";
