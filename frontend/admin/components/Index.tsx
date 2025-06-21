@@ -257,7 +257,7 @@ const AdminPanel: React.FC = () => {
                   </td>
                   <td className="p-3">
                     <button
-                      onClick={() => navigate(`/orderProcess/${(order.orderId || order._id).replace("#", "")}`)}
+                      onClick={() => navigate(`/orderProcess/${(order._id || order._id).replace("#", "")}`)}
                       className="text-blue-500 hover:text-blue-700 text-sm"
                     >
                       View Details
