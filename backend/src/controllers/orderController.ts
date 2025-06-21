@@ -50,7 +50,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
         }
 
         // Parse qty (string) to a number
-        const currentStock = parseInt(book.qty, 10);
+        const currentStock = book.qty;
         if (isNaN(currentStock)) {
           throw new Error(`Invalid stock quantity for book: ${book.title}`);
         }
@@ -91,7 +91,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
       for (const item of items ) {
         const book = await Book.findById(item.bookId).session(session);
         if (book) {
-          const stock = parseInt(book.qty, 10);
+          const stock = book.qty;
           if (stock < 5) {
             lowStockBooks.push({ title: book.title, stock });
           }

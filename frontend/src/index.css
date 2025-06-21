@@ -4,10 +4,25 @@
 
 
 @layer utilities {
-    .clip-path-polygon-1 {
-      clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
-    }
-    .clip-path-polygon-2 {
-      clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
-    }
+  .clip-path-polygon-1 {
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
   }
+
+  .clip-path-polygon-2 {
+    clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes spin-once {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-once {
+  animation: spin-once 0.5s linear;
+}

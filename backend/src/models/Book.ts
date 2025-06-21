@@ -7,7 +7,7 @@ interface IBook extends Document {
   isbn: string;
   description: string;
   images: string[];
-  qty: string;
+  qty: number;
   price: number;
   availabilty:boolean;
   genre:string;
@@ -25,7 +25,7 @@ const bookSchema: Schema = new Schema({
   author: { type: String, required: true },
   isbn: { type: String, required: true },
   description: { type: String, required: true },
-  qty: { type: String, required: true },
+  qty: { type: Number, required: true },
   images:{type:[String],required:true},
   price: { type: Number, required: true },
   genre: { type: String, required: true },
