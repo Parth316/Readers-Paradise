@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node dist/server.js",
     "build": "tsc",
+    "lint": "eslint .",
     "watch": "tsc -w",
     "dev": "nodemon --watch src/**/*.ts --exec \"npx ts-node\" src/server.ts"
   },
